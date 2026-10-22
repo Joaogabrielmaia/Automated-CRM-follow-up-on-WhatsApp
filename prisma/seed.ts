@@ -18,14 +18,14 @@ async function main() {
   const passwordHash = await hashPassword(DEMO_PASSWORD);
 
   const admin = await prisma.user.upsert({
-    where: { email: "dono@pulso.demo" },
+    where: { email: "marcos@casanova.example" },
     update: {},
-    create: { name: "Marcos Dono", email: "dono@pulso.demo", passwordHash, role: "ADMIN" },
+    create: { name: "Marcos", email: "marcos@casanova.example", passwordHash, role: "ADMIN" },
   });
   const attendant = await prisma.user.upsert({
-    where: { email: "atendente@pulso.demo" },
+    where: { email: "camila@casanova.example" },
     update: {},
-    create: { name: "Camila Atendente", email: "atendente@pulso.demo", passwordHash, role: "ATTENDANT" },
+    create: { name: "Camila", email: "camila@casanova.example", passwordHash, role: "ATTENDANT" },
   });
 
   await prisma.setting.upsert({
@@ -42,8 +42,9 @@ async function main() {
 
   const stageDefs = [
     { name: "Novo", kind: "OPEN" },
-    { name: "Em conversa", kind: "OPEN" },
+    { name: "Contatado", kind: "OPEN" },
     { name: "Orçamento enviado", kind: "QUOTE" },
+    { name: "Negociação", kind: "OPEN" },
     { name: "Ganho", kind: "WON" },
     { name: "Perdido", kind: "LOST" },
   ] as const;
@@ -56,7 +57,7 @@ async function main() {
   const welcome = await prisma.messageTemplate.create({
     data: {
       name: "Boas-vindas",
-      body: "Oi, {nome}! Aqui é da equipe. Recebemos seu contato sobre {servico}. Como posso ajudar?",
+      body: "Oi, {nome}! Aqui é da Casa Nova Reformas. Recebemos seu contato sobre {servico}. Como posso ajudar?",
     },
   });
   const followUp1 = await prisma.messageTemplate.create({
@@ -108,13 +109,13 @@ async function main() {
 
   // Leads de exemplo espalhados pelo funil. Telefones fictícios; os finais 0000/0001/9999 simulam falhas (ADR-002).
   const leads = [
-    { name: "Ana Paula Souza", phone: "+5511999990101", source: "Instagram", interest: "Limpeza pós-obra", stage: "Novo", ageHours: 1 },
-    { name: "Bruno Lima", phone: "+5511999990102", source: "Indicação", interest: "Manutenção de ar-condicionado", stage: "Em conversa", ageHours: 30, inbound: 4 },
+    { name: "Ana Paula Souza", phone: "+5511999990101", source: "Instagram", interest: "Reforma de banheiro", stage: "Novo", ageHours: 1 },
+    { name: "Bruno Lima", phone: "+5511999990102", source: "Indicação", interest: "Troca de piso da sala", stage: "Contatado", ageHours: 30, inbound: 4 },
     { name: "Carla Mendes", phone: "+5511999990103", source: "Anúncio", interest: "Pintura de apartamento", stage: "Orçamento enviado", ageHours: 60, value: "2800.00", quoteAgeHours: 50 },
-    { name: "Diego Rocha", phone: "+5511999990104", source: "Site", interest: "Instalação elétrica", stage: "Ganho", ageHours: 200, value: "1500.00" },
-    { name: "Elisa Prado", phone: "+5511999990105", source: "Instagram", interest: "Jardinagem", stage: "Perdido", ageHours: 300, lost: "Sem resposta após follow-ups" },
+    { name: "Diego Rocha", phone: "+5511999990104", source: "Site", interest: "Reforma elétrica", stage: "Ganho", ageHours: 200, value: "1500.00" },
+    { name: "Elisa Prado", phone: "+5511999990105", source: "Instagram", interest: "Troca de telhado", stage: "Perdido", ageHours: 300, lost: "Sem resposta após follow-ups" },
     { name: "Fábio Teixeira", phone: "+5511999990106", source: "Outro", interest: null, stage: "Novo", ageHours: 3 },
-    { name: "Gabriela Nunes", phone: "+5511999990000", source: "Site", interest: "Dedetização", stage: "Novo", ageHours: 2 },
+    { name: "Gabriela Nunes", phone: "+5511999990000", source: "Site", interest: "Reforma de cozinha", stage: "Novo", ageHours: 2 },
   ];
 
   for (const [i, l] of leads.entries()) {
@@ -149,7 +150,7 @@ async function main() {
     },
   });
 
-  console.log(`Seed concluído. Contas: dono@pulso.demo e atendente@pulso.demo (senha ${DEMO_PASSWORD}).`);
+  console.log(`Seed concluído. Contas: marcos@casanova.example e camila@casanova.example (senha ${DEMO_PASSWORD}).`);
 }
 
 main()
