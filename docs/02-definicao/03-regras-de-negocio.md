@@ -25,6 +25,7 @@ Os valores padrão abaixo vêm dos [registros de discovery](../01-discovery/03-r
 | RN-15 | **Orçamento sem retorno.** Lead na etapa de orçamento por 48h sem resposta dispara um lembrete para a atendente (tarefa) e uma mensagem ao lead, na mesma chave de idempotência da etapa atual | 48h |
 | RN-16 | **Escopo da ação.** Cada regra tem uma ação: enviar mensagem, criar tarefa ou mover para Perdido. Assim o dono pode começar só com lembretes | — |
 | RN-17 | **Regra nova não age sobre o passado.** Uma regra só vale para leads criados (boas-vindas), ciclos iniciados (sem resposta) ou entradas na etapa (orçamento) depois do momento em que foi ativada. Isso evita disparar mensagens para toda a base quando o dono liga uma regra | Campo `activatedAt` |
+| RN-18 | **Intervalo mínimo entre mensagens.** Duas mensagens automáticas ao mesmo lead precisam de pelo menos 12 horas entre si. Protege de uma rajada quando o ciclo ficou parado e várias regras vencem de uma vez | 12h (720 min) |
 
 ## Critérios para mover etapas
 

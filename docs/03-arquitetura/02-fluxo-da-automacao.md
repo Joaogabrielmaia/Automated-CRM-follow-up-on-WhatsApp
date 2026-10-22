@@ -94,7 +94,9 @@ stateDiagram-v2
     SENDING --> CANCELED: opt-out, resposta, pausa, etapa encerrada
     SENDING --> SKIPPED: limite ou variável faltando
     PENDING --> CANCELED: resposta do lead
+    SENDING --> DONE: tarefa criada ou lead movido
     SENT --> [*]
+    DONE --> [*]
     FAILED --> [*]
     CANCELED --> [*]
     SKIPPED --> [*]

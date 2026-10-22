@@ -77,7 +77,7 @@ erDiagram
                     string idempotencyKey UK
                     string leadId FK
                     string ruleId FK
-                    enum status "PENDING | SENDING | SENT | FAILED | CANCELED | SKIPPED"
+                    enum status "PENDING | SENDING | SENT | DONE | FAILED | CANCELED | SKIPPED"
                     datetime scheduledFor
                     int attempts
                     string reason
@@ -94,7 +94,8 @@ erDiagram
                    datetime receivedAt }
     Setting { int id PK "sempre 1"
               json businessHours
-              int maxMessagesPerCycle }
+              int maxMessagesPerCycle
+              int minGapMinutes }
 ```
 
 ## Decisões que valem lembrar
