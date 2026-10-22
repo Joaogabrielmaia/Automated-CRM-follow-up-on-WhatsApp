@@ -1,0 +1,244 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ATTENDANT
+}
+
+enum StageKind {
+  OPEN
+  QUOTE
+  WON
+  LOST
+}
+
+enum InteractionType {
+  MESSAGE_OUT
+  MESSAGE_IN
+  NOTE
+  STAGE_CHANGE
+  SYSTEM
+}
+
+enum RuleTrigger {
+  NEW_LEAD
+  NO_REPLY
+  QUOTE_NO_RETURN
+}
+
+enum RuleAction {
+  SEND_MESSAGE
+  CREATE_TASK
+  MOVE_TO_LOST
+}
+
+enum JobStatus {
+  PENDING
+  SENDING
+  SENT
+  DONE
+  FAILED
+  CANCELED
+  SKIPPED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  leads Lead[]
+  tasks Task[]
+}
+
+model Stage {
+  id       String    @id @default(cuid())
+  name     String
+  position Int
+  kind     StageKind
+
+  leads   Lead[]
+  history StageHistory[]
+}
+
+model Lead {
+  id               String    @id @default(cuid())
+  name             String
+  phone            String    @unique
+  source           String
+  interest         String?
+  estimatedValue   Decimal?  @db.Decimal(10, 2)
+  stageId          String
+  ownerId          String?
+  lostReason       String?
+  optedOutAt       DateTime?
+  automationPaused Boolean   @default(false)
+  lastInboundAt    DateTime?
+  lastOutboundAt   DateTime?
+  cycleStartedAt   DateTime?
+  stageChangedAt   DateTime  @default(now())
+  archivedAt       DateTime?
+  anonymizedAt     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  stage        Stage          @relation(fields: [stageId], references: [id])
+  owner        User?          @relation(fields: [ownerId], references: [id])
+  interactions Interaction[]
+  tasks        Task[]
+  history      StageHistory[]
+  jobs         AutomationJob[]
+  events       WebhookEvent[]
+
+  @@index([stageId])
+  @@index([ownerId])
+}
+
+model Interaction {
+  id        String          @id @default(cuid())
+  leadId    String
+  type      InteractionType
+  body      String
+  createdAt DateTime        @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+model Task {
+  id              String    @id @default(cuid())
+  leadId          String?
+  title           String
+  dueAt           DateTime
+  doneAt          DateTime?
+  assigneeId      String?
+  createdBySystem Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  lead     Lead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  assignee User? @relation(fields: [assigneeId], references: [id])
+
+  @@index([dueAt])
+  @@index([leadId])
+}
+
+model StageHistory {
+  id          String   @id @default(cuid())
+  leadId      String
+  fromStageId String?
+  toStageId   String
+  at          DateTime @default(now())
+
+  lead  Lead  @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  toStage Stage @relation(fields: [toStageId], references: [id])
+
+  @@index([leadId])
+  @@index([toStageId])
+}
+
+model MessageTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rules AutomationRule[]
+}
+
+model AutomationRule {
+  id           String      @id @default(cuid())
+  name         String
+  trigger      RuleTrigger
+  afterMinutes Int
+  action       RuleAction
+  templateId   String?
+  taskTitle    String?
+  lostReason   String?
+  active       Boolean     @default(false)
+  activatedAt  DateTime?
+  createdAt    DateTime    @default(now())
+
+  template MessageTemplate? @relation(fields: [templateId], references: [id])
+  jobs     AutomationJob[]
+}
+
+model AutomationJob {
+  id               String     @id @default(cuid())
+  idempotencyKey   String     @unique
+  leadId           String
+  ruleId           String
+  status           JobStatus  @default(PENDING)
+  scheduledFor     DateTime
+  attempts         Int        @default(0)
+  reason           String?
+  lastError        String?
+  providerMessageId String?
+  sentAt           DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  lead Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  rule AutomationRule @relation(fields: [ruleId], references: [id])
+  logs AutomationLog[]
+
+  @@index([status, scheduledFor])
+  @@index([leadId])
+}
+
+model AutomationRun {
+  id          String    @id @default(cuid())
+  startedAt   DateTime
+  finishedAt  DateTime?
+  created     Int       @default(0)
+  sent        Int       @default(0)
+  failed      Int       @default(0)
+  skipped     Int       @default(0)
+  rescheduled Int       @default(0)
+
+  logs AutomationLog[]
+}
+
+model AutomationLog {
+  id      String   @id @default(cuid())
+  at      DateTime
+  event   String
+  detail  String?
+  leadId  String?
+  jobId   String?
+  runId   String?
+
+  job AutomationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  run AutomationRun? @relation(fields: [runId], references: [id], onDelete: SetNull)
+
+  @@index([at])
+  @@index([leadId])
+}
+
+model WebhookEvent {
+  id         String   @id @default(cuid())
+  externalId String   @unique
+  receivedAt DateTime @default(now())
+  leadId     String?
+
+  lead Lead? @relation(fields: [leadId], references: [id], onDelete: SetNull)
+}
+
+model Setting {
+  id                  Int  @id @default(1)
+  businessHours       Json
+  maxMessagesPerCycle Int  @default(3)
+  minGapMinutes       Int  @default(720)
+}
