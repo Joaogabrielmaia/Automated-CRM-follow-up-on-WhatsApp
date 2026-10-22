@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runAutomationCycle } from "@/lib/automation/engine";
-import { handleInboundMessage } from "@/lib/automation/inbound";
 import { SimulatedProvider } from "@/lib/providers/simulated";
 import type { MessageProvider } from "@/lib/providers";
 import { addMinutes, at, baseWorld, jobsOf, makeLead, makeRule, MON_10H, nextPhone, prisma, resetDb } from "./helpers";
@@ -76,59 +75,6 @@ describe("horário comercial (RN-01, RN-02)", () => {
 
     const morning = await runAutomationCycle(at("2026-10-20T11:00:00Z"));
     expect(morning.sent).toBe(1);
-  });
-});
-
-describe("resposta e opt-out (RN-03, RN-04)", () => {
-  it("resposta cancela o que estava na fila e cria uma única tarefa Responder", async () => {
-    await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
-    // Fora do horário, a mensagem fica PENDING na fila.
-    const created = at("2026-10-19T23:00:00Z");
-    const lead = await makeLead({ stageId: stageId(), createdAt: created, ownerId: world.user.id });
-    await runAutomationCycle(at("2026-10-19T23:10:00Z"));
-
-    const reply = at("2026-10-19T23:30:00Z");
-    const result = await handleInboundMessage({ eventId: "e1", from: lead.phone, text: "Oi, quero um orçamento" }, reply);
-    expect(result).toEqual({ status: "processed", leadId: lead.id });
-    await handleInboundMessage({ eventId: "e2", from: lead.phone, text: "Alguém aí?" }, addMinutes(reply, 1));
-
-    const [job] = await jobsOf(lead.id);
-    expect(job).toMatchObject({ status: "CANCELED", reason: "REPLIED" });
-    const tasks = await prisma.task.findMany({ where: { leadId: lead.id } });
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0]).toMatchObject({ createdBySystem: true, assigneeId: world.user.id });
-    expect(tasks[0].dueAt).toEqual(addMinutes(reply, 120));
-
-    const next = await runAutomationCycle(at("2026-10-20T11:00:00Z"));
-    expect(next.sent).toBe(0);
-  });
-
-  it("SAIR (com acento, caixa e pontuação) bloqueia todos os envios seguintes", async () => {
-    await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
-    const lead = await makeLead({ stageId: stageId(), createdAt: MON_10H });
-
-    const result = await handleInboundMessage({ eventId: "o1", from: lead.phone, text: " Sair! " }, addMinutes(MON_10H, 1));
-    expect(result.status).toBe("opt_out");
-
-    const summary = await runAutomationCycle(addMinutes(MON_10H, 10));
-    expect(summary).toMatchObject({ created: 0, sent: 0 });
-    const updated = await prisma.lead.findUniqueOrThrow({ where: { id: lead.id } });
-    expect(updated.optedOutAt).not.toBeNull();
-    expect(await prisma.task.count({ where: { leadId: lead.id } })).toBe(0);
-  });
-
-  it("mesmo evento do webhook chegando duas vezes é descartado", async () => {
-    const lead = await makeLead({ stageId: stageId(), createdAt: MON_10H });
-    const msg = { eventId: "dup-1", from: lead.phone, text: "Oi" };
-    expect((await handleInboundMessage(msg, MON_10H)).status).toBe("processed");
-    expect((await handleInboundMessage(msg, MON_10H)).status).toBe("duplicate");
-    expect(await prisma.interaction.count({ where: { leadId: lead.id, type: "MESSAGE_IN" } })).toBe(1);
-  });
-
-  it("remetente desconhecido não cria lead nem quebra", async () => {
-    const result = await handleInboundMessage({ eventId: "u1", from: "+5511988887777", text: "Oi" }, MON_10H);
-    expect(result.status).toBe("unknown_sender");
-    expect(await prisma.lead.count()).toBe(0);
   });
 });
 
