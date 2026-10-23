@@ -20,7 +20,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
     "simulate:reply": "tsx scripts/simulate-reply.ts",
-    "tick": "tsx scripts/tick.ts"
+    "tick": "tsx scripts/tick.ts",
+    "user:create": "tsx scripts/create-user.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
