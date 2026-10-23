@@ -12,3 +12,5 @@ coverage
 .DS_Store
 
 .next-e2e
+.neon
+.neon.env
