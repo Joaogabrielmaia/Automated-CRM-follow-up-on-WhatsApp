@@ -5,10 +5,12 @@ Mini CRM para pequenas empresas de serviços, com funil de vendas e follow-up au
 ## Comandos
 
 - `npm run db:up` sobe o Postgres local (porta 5434)
-- `npm run db:migrate` / `npm run db:seed`
+- `npm run db:migrate` / `npm run db:seed` (demonstração, com contas de teste e leads fictícios)
+- `npm run db:seed:pilot` etapas, modelos e regras (desligadas) de um piloto real; depois `npm run user:create`
+- `npm run db:deploy` aplica as migrations (usa `DIRECT_URL` quando existir)
 - `npm run dev` roda o app em http://localhost:3000
-- `npm test` roda Vitest (unit + integration, precisa do banco no ar)
-- `npm run test:e2e` roda Playwright
+- `npm test` roda Vitest (unit + integration, precisa do banco no ar; usa o banco `*_test`)
+- `npm run test:e2e` roda Playwright contra o build de produção (banco `*_e2e`, porta 3100)
 - `npm run typecheck` e `npm run lint`
 
 ## Convenções

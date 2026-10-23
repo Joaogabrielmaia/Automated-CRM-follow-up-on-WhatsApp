@@ -20,7 +20,7 @@
 | Anonimizar lead | não | sim |
 | Rodar ciclo manualmente | não | sim |
 
-- Rotas `tick` e `webhook` não usam sessão: `tick` exige `x-automation-secret`; `webhook` exige assinatura HMAC.
+- Rotas `tick` e os webhooks não usam sessão. `tick` exige `x-automation-secret`. `/api/webhooks/whatsapp` (formato do Pulso, usado pelo simulador e por integrações próprias) exige `x-pulso-signature` com `WEBHOOK_SECRET`. `/api/webhooks/whatsapp-cloud` (entrada nativa da Meta) exige `X-Hub-Signature-256` com `WHATSAPP_APP_SECRET` nos eventos e `WHATSAPP_VERIFY_TOKEN` na verificação. Sem o segredo configurado, as rotas recusam tudo.
 
 ## Validação de entrada
 
@@ -48,7 +48,7 @@ Resposta exatamente igual a SAIR, PARAR ou STOP (sem caixa, acento ou pontuaçã
 
 ## Segredos
 
-`AUTH_SECRET`, `AUTOMATION_SECRET`, `WEBHOOK_SECRET`, `DATABASE_URL` e credenciais do WhatsApp vêm do ambiente. O repositório só tem `.env.example` com valores de exemplo. As senhas das contas de teste da versão de demonstração são públicas de propósito e só existem no seed.
+`AUTH_SECRET`, `AUTOMATION_SECRET`, `WEBHOOK_SECRET`, `DATABASE_URL`, `DIRECT_URL` e as credenciais do WhatsApp (`WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`) vêm do ambiente. O repositório só tem `.env.example` com valores de exemplo. As senhas das contas de teste da versão de demonstração são públicas de propósito e só existem no seed de demonstração (`npm run db:seed`). O ambiente de piloto não roda esse seed: usa `npm run db:seed:pilot` (sem contas) e `npm run user:create` (senha vinda do ambiente, mínimo de 10 caracteres, recusa a senha pública).
 
 ## O que não está coberto
 

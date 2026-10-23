@@ -1,7 +1,7 @@
 # Runbook de operação
 
 **Objetivo:** dizer a quem opera o Pulso o que olhar todo dia, o que fazer quando algo falha e o que não fazer.
-**Data:** 23/10/2026 · **Status:** escrito a partir do código e dos [modos de falha](../03-arquitetura/05-modos-de-falha.md); **nenhum procedimento foi ensaiado em produção**
+**Data:** 23/10/2026 · **Status:** atualizado em 23/10/2026, a partir do código e dos [modos de falha](../03-arquitetura/05-modos-de-falha.md); **nenhum procedimento foi ensaiado em produção**
 **Relacionados:** [rollback](../06-deploy-e-go-live/rollback.md) · [n8n](../06-deploy-e-go-live/n8n.md) · [deploy](../06-deploy-e-go-live/deploy.md) · [riscos](../02-definicao/06-riscos.md)
 
 ## Papéis
@@ -17,14 +17,14 @@
 | O que | Onde | O que significa |
 |---|---|---|
 | App e banco de pé | `GET /api/health` | `status: ok`; `503` = banco inacessível |
-| O ciclo está rodando | Painel ("Último ciclo há…"), tela Automação, `lastAutomationRunAt` no health | Deve ter no máximo ~10 minutos (o n8n roda a cada 5) |
+| O ciclo está rodando | Painel ("Último ciclo há…"), tela Automação, e no health o campo `automation` | `ok` = recente; `stale` = parado há mais de 15 min (o n8n roda a cada 5); `never` = nunca rodou; `idle` = não há regra ativa, então não há o que rodar. `?strict=1` devolve 503 em `stale` e `never`, para o monitor externo |
 | O que a automação decidiu | Tela *Automação*: fila e log, com filtro por evento e por lead | Cada decisão tem evento e motivo |
 | Execuções do agendador | n8n → *Executions* | Verde a cada 5 minutos |
 | Falhas que pedem uma pessoa | Tela *Hoje* (tarefas "criada pela automação") | "Verificar contato de…", "Conferir se a mensagem para… foi enviada" |
 
-Eventos do log: Criado, Mensagem enviada, Pulado, Cancelado, Reagendado, Nova tentativa agendada, Falha, Fila cancelada, Tarefa criada, Movido para Perdido, Pediu para sair, Lead respondeu, Remetente desconhecido.
+Eventos do log: Criado, Mensagem enviada, Pulado, Cancelado, Reagendado, Nova tentativa agendada, Falha, **Atrasado**, Fila cancelada, Tarefa criada, Movido para Perdido, Pediu para sair, Lead respondeu, Remetente desconhecido.
 
-Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensagens, Limite de mensagens por ciclo, O lead respondeu, O lead pediu para sair, Automação pausada, Etapa encerrada, Faltou dado do lead, Tentativas esgotadas, Erro definitivo do provedor, Estado incerto.
+Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensagens, Limite de mensagens por ciclo, O lead respondeu, O lead pediu para sair, Automação pausada, Etapa encerrada, **Regra desativada**, Faltou dado do lead, Parâmetros do modelo aprovado incompletos, Tentativas esgotadas, Erro definitivo do provedor, Estado incerto.
 
 ## Rotina
 
@@ -38,7 +38,7 @@ Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensage
 
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
-| "Último ciclo" com mais de 15 minutos | n8n parado, fluxo desativado, ou o app responde erro | 1) n8n → *Executions*: há execuções? 2) Se vermelhas, ver a mensagem (401 = segredos diferentes; 5xx = ver `/api/health`). 3) Admin: *Rodar ciclo agora*. Quando o ciclo volta, ele recupera o atraso sozinho, respeitando o horário. Observação: o log **não** marca essas mensagens como "atrasadas" (o documento de modos de falha prevê isso, mas não foi implementado) |
+| "Último ciclo" com mais de 15 minutos (`automation: stale` no health; o monitor externo avisa) | n8n parado, fluxo desativado, ou o app responde erro | 1) n8n → *Executions*: há execuções? 2) Se vermelhas, ver a mensagem (401 = segredos diferentes; 5xx = ver `/api/health`). 3) Admin: *Rodar ciclo agora*. Quando o ciclo volta, ele recupera o atraso sozinho, respeitando o horário, e o log mostra o evento **Atrasado** nos envios que passaram de 15 minutos |
 | `/api/health` devolve 503 | Banco do Neon inacessível ou `DATABASE_URL` errada | Abrir o painel do Neon. Se o banco "dormiu", a próxima chamada o acorda; repetir após 30 s. Se foi mudança de variável, voltar o valor e refazer o deploy |
 | n8n com 401 no ciclo | `AUTOMATION_SECRET` diferente entre n8n e Vercel | Igualar os dois. O n8n lê do `.env` local ou do `docker-compose.override.yml` |
 | n8n com erro de rede/timeout | App fora do ar, ou banco acordando | Ver health. O fluxo tenta 3 vezes sozinho |
@@ -46,11 +46,15 @@ Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensage
 | **Falha** com "Tentativas esgotadas" | Provedor instável durante 4 tentativas | Camila liga/escreve para o lead (tarefa criada). Se afetar vários, parar e conferir o provedor |
 | Tarefa "Conferir se a mensagem para X foi enviada" (Estado incerto) | O processo caiu depois de reservar o envio; não dá para saber se saiu | **Não reenviar às cegas.** Conferir no WhatsApp Business ou no painel da Meta se a mensagem existe. Se saiu, concluir a tarefa. Se não saiu, a Camila contata o lead manualmente |
 | Mensagens com status *Pulado* e "Faltou dado do lead" | O modelo usa `{servico}` ou `{valor}` e o lead não tem | Preencher o dado no lead, ou trocar o modelo (ver [boas práticas](../06-deploy-e-go-live/boas-praticas-de-mensagem.md)). A mensagem pulada **não** é reenviada depois: o ciclo daquele envio acabou |
-| Webhook responde 401 | `WEBHOOK_SECRET` diferente, ou a assinatura foi calculada sobre um texto diferente do enviado | Igualar o segredo. Conferir que o corpo assinado é exatamente o enviado ([n8n](../06-deploy-e-go-live/n8n.md), fluxo 2) |
-| Respostas dos leads não aparecem | Fluxo 2 do n8n não existe/está parado, ou número do remetente sem lead | No piloto atual, respostas só entram pelo simulador. Com fluxo 2: ver log por "Remetente desconhecido" |
+| Webhook da Meta (`/api/webhooks/whatsapp-cloud`) responde 401 | `WHATSAPP_APP_SECRET` diferente do segredo do app na Meta | Copiar de novo o segredo do app (Configurações do app → Básico) e refazer o deploy |
+| Meta não consegue verificar a URL do webhook (403) | `WHATSAPP_VERIFY_TOKEN` diferente do digitado na Meta, ou não definido | Igualar os dois e refazer o deploy |
+| Webhook no formato do Pulso (`/api/webhooks/whatsapp`) responde 401 | `WEBHOOK_SECRET` diferente, ou a assinatura foi calculada sobre um texto diferente do enviado | Igualar o segredo; o corpo assinado precisa ser exatamente o enviado |
+| Respostas dos leads não aparecem | Webhook da Meta não cadastrado/assinando `messages`, ou número do remetente sem lead | Conferir o painel de webhooks da Meta; no log da Automação, procurar "Remetente desconhecido". Na fase 1 (sem envio) não há resposta pelo sistema: a conversa é no WhatsApp da Camila |
 | Suspeita de mensagem duplicada | — | Parar (rollback 1). Procurar: `SELECT "leadId", body, count(*) FROM "Interaction" WHERE type = 'MESSAGE_OUT' GROUP BY "leadId", body HAVING count(*) > 1;` A chave de idempotência é única no banco, então uma duplicata de verdade seria um defeito grave: guarde o que viu |
 | Lead recebeu mensagem depois de pedir SAIR | — | Parar já. Tratar como incidente: [rollback](../06-deploy-e-go-live/rollback.md), seção "Se uma mensagem errada saiu" |
-| Desativei a regra e mesmo assim saiu mensagem | A fila já tinha o trabalho criado | Comportamento atual: desativar não esvazia a fila. Cancelar a fila (rollback nível 2) |
+| Desativei a regra e mesmo assim saiu mensagem | Desativar cancela a fila da regra (RN-19). Se saiu, o envio já estava em andamento (`SENDING`) quando desativei, ou foi outra regra | Conferir o log do lead para ver qual regra enviou. Para parar tudo, rollback nível 1 e 2 |
+| Fiz uma ação (salvar, ativar) e a tela não mudou, ou o botão ficou em "Salvando…" | Defeito conhecido que a remoção do `loading.tsx` corrigiu (ADR-010). Se voltar, alguém recolocou um `loading.tsx` ou `Suspense` em volta das páginas | Recarregar a página mostra o estado verdadeiro. Reportar: o E2E deve falhar de forma intermitente |
+| Mensagem pulada com "Parâmetros do modelo aprovado incompletos" | O modelo tem nome da Meta preenchido e o lead não tem algum dado do texto | Preencher o dado no lead ou usar um modelo sem essa variável |
 | Login "E-mail ou senha incorretos" para quem lembra a senha | Conta desativada, e-mail diferente, senha errada | Não há recuperação de senha. Admin pode criar nova conta com `npm run user:create`; se for a mesma conta, o e-mail tem que ser outro ou o registro antigo precisa ser removido no banco |
 
 ## Operações comuns

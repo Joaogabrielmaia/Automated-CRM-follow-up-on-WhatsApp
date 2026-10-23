@@ -31,8 +31,8 @@ Opção 3. A interface tem um único método, `send({ to, body, idempotencyKey, 
 
 1. Número dedicado e conta business verificada na Meta.
 2. Definir `MESSAGE_PROVIDER=whatsapp-cloud`, `WHATSAPP_PHONE_NUMBER_ID` e `WHATSAPP_ACCESS_TOKEN` (fora do repositório).
-3. Cadastrar e aprovar modelos de mensagem equivalentes aos meus e adaptar o envio para usar o tipo `template` fora da janela de 24h. Hoje o adaptador envia texto livre.
-4. Apontar o webhook do provedor para o app (ou para o n8n) com o mapeamento do payload deles para o meu.
+3. Cadastrar e aprovar na Meta modelos de mensagem equivalentes aos meus e informar o nome de cada um na tela *Modelos* (campo "Nome do modelo aprovado na Meta"). **Já implementado (23/10/2026):** com o nome preenchido, o adaptador envia o tipo `template`, e as variáveis do texto, na ordem em que aparecem, viram os parâmetros `{{1}}`, `{{2}}`… Sem o nome, envia texto livre, aceito só dentro da janela de 24h. Falta a aprovação na Meta e testar contra a conta de teste deles.
+4. Apontar o webhook da Meta para `/api/webhooks/whatsapp-cloud` e definir `WHATSAPP_APP_SECRET` e `WHATSAPP_VERIFY_TOKEN`. **Já implementado (23/10/2026)**, ver [ADR-007](ADR-007-validacao-do-webhook.md).
 
 ## Trade-off
 

@@ -26,6 +26,7 @@ Os valores padrão abaixo vêm dos [registros de discovery](../01-discovery/03-r
 | RN-16 | **Escopo da ação.** Cada regra tem uma ação: enviar mensagem, criar tarefa ou mover para Perdido. Assim o dono pode começar só com lembretes | — |
 | RN-17 | **Regra nova não age sobre o passado.** Uma regra só vale para leads criados (boas-vindas), ciclos iniciados (sem resposta) ou entradas na etapa (orçamento) depois do momento em que foi ativada. Isso evita disparar mensagens para toda a base quando o dono liga uma regra | Campo `activatedAt` |
 | RN-18 | **Intervalo mínimo entre mensagens.** Duas mensagens automáticas ao mesmo lead precisam de pelo menos 12 horas entre si. Protege de uma rajada quando o ciclo ficou parado e várias regras vencem de uma vez | 12h (720 min) |
+| RN-19 | **Desativar uma regra para o que ela já tinha na fila.** Ao desativar, os envios pendentes dessa regra são cancelados na hora (motivo "Regra desativada"), e o motor confere de novo antes de executar. Desligar tem que parar de verdade, não só deixar de criar trabalho novo | — |
 
 ## Critérios para mover etapas
 

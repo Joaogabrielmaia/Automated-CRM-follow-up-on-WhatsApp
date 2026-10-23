@@ -1,7 +1,7 @@
 # Plano de rollout
 
 **Objetivo:** definir em que ordem o Pulso passa a ser usado de verdade, com critérios para avançar ou parar.
-**Data:** 23/10/2026 · **Status:** proposta. Decisões tomadas por mim com o que sei hoje; ajuste conforme o piloto real.
+**Data:** 23/10/2026 · **Status:** proposta, atualizada em 23/10/2026 depois que as lacunas técnicas da versão anterior foram fechadas no código. Decisões tomadas por mim com o que sei hoje; ajuste conforme o piloto real.
 **Relacionados:** [checklist](checklist.md) · [rollback](rollback.md) · [treinamento](treinamento.md) · [riscos](../02-definicao/06-riscos.md)
 
 ## A decisão principal
@@ -10,7 +10,7 @@
 
 Por quê:
 
-1. **O envio real não está pronto.** O adaptador da API oficial nunca foi testado contra a Meta, a API exige modelos aprovados para a primeira mensagem e não existe fluxo para receber as respostas (ver [n8n](n8n.md)). Ligar o envio agora produziria falhas.
+1. **O envio real não foi validado.** O código da API oficial existe (envio de texto e de modelo aprovado, e recebimento de respostas) e está coberto por testes com a rede simulada, mas **nunca falou com a Meta de verdade**. A Meta ainda exige conta verificada, número dedicado e modelos aprovados, e isso só se resolve na conta, não no código.
 2. **O envio simulado engana.** Com `MESSAGE_PROVIDER=simulated`, uma regra de mensagem registra "enviada" na linha do tempo do lead sem sair nada. Num piloto real isso seria pior que não ter automação. Por isso, **nas fases 1 e 2 toda regra do tipo "Enviar mensagem" fica desligada.**
 3. **O maior valor está no lembrete.** O problema do cenário é o lead esfriar porque ninguém lembra de voltar a falar com ele (P1). Tarefa no dia certo resolve isso sem risco de bloqueio do número.
 4. **A RN-16 já previa isso:** "assim o dono pode começar só com lembretes".
@@ -19,26 +19,27 @@ Por quê:
 
 ### Fase 0: preparação (1 a 2 dias)
 
-- Deploy e conferências do [checklist](checklist.md), com contas reais criadas por `npm run user:create` (sem o seed).
-- Importar os leads atuais da planilha. **Não há importação em lote**: para um piloto pequeno, cadastrar à mão os leads em aberto (poucas dezenas). Importação CSV vira item do roadmap.
+- Deploy e conferências do [checklist](checklist.md). Dados iniciais com `npm run db:seed:pilot` (etapas, modelos e regras, todas desligadas) e contas reais com `npm run user:create`. Nada de `db:seed`.
+- Importar os leads atuais da planilha em *Funil → Importar CSV* (até 500 por arquivo). Eles entram com a automação **pausada**, para a regra de "lead novo" não tratar lead antigo como se tivesse acabado de chegar.
 - [Treinamento](treinamento.md) da Camila e do Marcos.
-- Regras de mensagem desligadas; só as de tarefa (fase 1) prontas, ainda desligadas.
+- Todas as regras vêm desligadas do seed de piloto. As de nome **[Fase 1]** criam tarefas; as **[Fase 3]** enviam mensagens e não se mexe nelas ainda.
 
 ### Fase 1: funil e lembretes (semanas 1 e 2)
 
-Liga-se **uma regra por vez**, com um dia de intervalo, nesta ordem:
+Liga-se **uma regra por vez**, com um dia de intervalo, nesta ordem (já existem no seed de piloto, desligadas):
 
 | Ordem | Regra | Gatilho e atraso | Ação |
 |---|---|---|---|
-| 1 | Responder lead novo | Lead novo, 5 min | Criar tarefa "Responder {nome}" |
-| 2 | Cobrar orçamento | Orçamento sem retorno, 48 h | Criar tarefa "Cobrar retorno de {nome}" |
-| 3 | Retomar contato | Sem resposta, 24 h | Criar tarefa "Retomar contato com {nome}" |
+| 1 | [Fase 1] Responder lead novo | Lead novo, 5 min | Criar tarefa "Responder {nome}" |
+| 2 | [Fase 1] Cobrar orçamento | Orçamento sem retorno, 48 h | Criar tarefa "Cobrar retorno de {nome}" |
+| 3 | [Fase 1] Retomar contato | Sem resposta, 24 h | Criar tarefa "Retomar contato com {nome}" |
 
 Observações:
 
 - A regra 3 só enxerga leads com ciclo iniciado. O ciclo começa quando a atendente usa *Registrar contato feito fora do sistema* no lead. Esse passo é parte do treinamento: sem ele, não há lembrete de "sem resposta".
-- A regra "Mover para Perdido após 120 h" fica **desligada**. Mover lead para Perdido sem uma pessoa decidir é uma escolha de negócio que prefiro adiar.
+- A regra "[Fase 3] Perdido sem resposta (120h)" fica **desligada**. Mover lead para Perdido sem uma pessoa decidir é uma escolha de negócio que prefiro adiar.
 - Ao ligar uma regra, ela só vale para o que começar depois (RN-17). Os leads antigos não geram tarefa.
+- Desligar uma regra cancela na hora o que ela tinha na fila (RN-19), então voltar atrás é seguro.
 
 **Critérios para passar para a fase 2** (todos):
 
@@ -49,20 +50,27 @@ Observações:
 
 ### Fase 2: pré-requisitos do envio real (sem prazo fixo)
 
-Nada vai para o ar nesta fase. É trabalho técnico e de conta, e só termina quando **todos** estes itens estiverem prontos:
+Nada vai para o ar nesta fase. O que era código já está feito; o que falta é conta e validação com a Meta, e só termina quando **todos** os itens abertos estiverem prontos:
+
+**Já feito no código (23/10/2026)**
+
+- [x] Envio de modelo aprovado: campo "Nome do modelo aprovado na Meta" em *Modelos*; as variáveis viram parâmetros (RSK-08).
+- [x] Recebimento de respostas pela Meta direto no app (`/api/webhooks/whatsapp-cloud`), sem n8n público.
+- [x] Desativar regra cancela a fila (RN-19).
+- [x] CI com tipos, lint, testes e E2E (`.github/workflows/ci.yml`); falta só o repositório estar no GitHub.
+
+**Em aberto (dependem de conta, de você ou da Meta)**
 
 - [ ] Conta WhatsApp Business verificada e número dedicado (não o WhatsApp pessoal do Marcos).
-- [ ] Modelos de mensagem **aprovados pela Meta** e o provedor adaptado para enviá-los fora da janela de 24 h (RSK-08).
-- [ ] Provedor `whatsapp-cloud` testado na conta de teste da Meta, com teste automatizado do adaptador.
-- [ ] Fluxo 2 do n8n (respostas) construído, em n8n com endereço público e HTTPS.
-- [ ] Correção da desativação de regra, para ela cancelar a fila (ver [rollback](rollback.md)).
-- [ ] CI rodando os testes a cada push.
+- [ ] Modelos de mensagem **submetidos e aprovados pela Meta** (a aprovação pode recusar o texto).
+- [ ] Provedor `whatsapp-cloud` e webhook testados na conta de teste da Meta, com o resultado anotado (hoje só foram testados com payloads montados por mim).
+- [ ] Webhook da Meta cadastrado e verificado (ver [deploy](deploy.md#api-oficial-do-whatsapp-fase-3)).
 - [ ] Revisão jurídica da base legal e do texto de aviso (a minha leitura da LGPD não é parecer).
 
 ### Fase 3: envio real, em pequeno (semanas seguintes)
 
 - `MESSAGE_PROVIDER=whatsapp-cloud`.
-- Começar com **a regra de boas-vindas apenas**, para os leads novos de uma semana. Depois, o follow-up 1. Depois, o follow-up 2.
+- Desligar as regras [Fase 1] equivalentes à que for passar a enviar mensagem, para não duplicar o aviso. Começar com **"[Fase 3] Boas-vindas" apenas**, para os leads novos de uma semana. Depois, o follow-up 1. Depois, o follow-up 2.
 - Antes de cada regra nova: a Camila lê 10 mensagens reais enviadas pela regra anterior.
 - Manter as regras de tarefa ligadas em paralelo.
 

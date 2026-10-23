@@ -16,7 +16,7 @@
 | Min | Bloco | Exercício |
 |---|---|---|
 | 0–10 | **Para que serve.** O Pulso lembra, não fala por ela (na fase 1). Mostrar *Hoje* | Dizer em voz alta: "o que eu faço primeiro de manhã?" |
-| 10–25 | **Cadastrar e achar um lead.** Novo lead, telefone em qualquer formato, origem, interesse, valor. Busca no funil | Cadastrar 2 leads e achar um pelo telefone |
+| 10–25 | **Cadastrar e achar um lead.** Novo lead, telefone em qualquer formato, origem, interesse, valor. Busca no funil. *Importar CSV* para trazer a planilha (leads importados entram com a automação pausada) | Cadastrar 2 leads, achar um pelo telefone e importar um CSV de 3 linhas, uma delas com telefone faltando |
 | 25–40 | **Mover no funil.** Mover para outra etapa; para *Perdido* exige motivo; entrar em *Orçamento enviado* começa a contar as 48 h | Levar um lead até orçamento e outro até perdido |
 | 40–55 | **Tarefas e *Hoje*.** Tarefa criada pelo sistema vs. criada por ela; concluir | Concluir uma tarefa e criar outra com prazo |
 | 55–70 | **Registrar contato feito fora do sistema.** Mandou orçamento pelo WhatsApp? Registrar no lead. É o que liga o "sem resposta" | Registrar um contato e ver a marca "Sem resposta" no quadro |
@@ -32,6 +32,7 @@
 - **Não quero que a automação mexa neste lead:** *Pausar automação*.
 - **Lead escreveu SAIR / PARAR / STOP:** está bloqueado; não insistir por conta própria. Quem libera é o Marcos, e só se o lead pedir.
 - **Telefone repetido:** o lead já existe; procure pelo número.
+- **Lead veio da importação e está "Automação pausada":** é de propósito. Quando quiser lembretes para ele, abra o lead e *Retomar automação*.
 - **Algo estranho** (mensagem duplicada, mensagem fora de hora, mensagem quebrada): **avisar o Marcos na hora** e não mexer em nada. Ele sabe como parar.
 
 ## Sessão do Marcos (30 minutos)

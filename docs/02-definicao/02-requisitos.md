@@ -26,7 +26,8 @@
 | RF-16 | Log de execuções da automação visível na interface | Dono |
 | RF-17 | Simulador de lead para reproduzir uma resposta chegando | Demonstração |
 | RF-18 | Ao mover para Perdido, exigir o motivo | P5 |
-| RF-19 | Endpoint de healthcheck | Operação |
+| RF-19 | Endpoint de healthcheck, que também informa se o agendador está vivo (último ciclo recente) | Operação |
+| RF-20 | Importar leads por arquivo CSV (migração da planilha), com relatório das linhas ignoradas | Atendente / Dono |
 
 ## Requisitos não funcionais
 

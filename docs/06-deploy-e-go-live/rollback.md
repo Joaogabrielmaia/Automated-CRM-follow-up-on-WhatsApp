@@ -1,7 +1,7 @@
 # Rollback
 
 **Objetivo:** dizer como parar a automação, desfazer o estrago e voltar uma versão, do mais rápido ao mais invasivo.
-**Data:** 23/10/2026 · **Status:** escrito a partir do código; os comandos de banco foram conferidos contra o schema, mas **o ensaio num ambiente real ainda não foi feito**
+**Data:** 23/10/2026 · **Status:** atualizado em 23/10/2026. Os comportamentos descritos estão cobertos por teste automatizado; **o ensaio num ambiente real ainda não foi feito**
 **Relacionados:** [runbook](../07-pos-go-live/runbook.md) · [modos de falha](../03-arquitetura/05-modos-de-falha.md) · [rollout](rollout.md) · [checklist](checklist.md)
 
 ## Quando voltar atrás
@@ -19,7 +19,7 @@ Depois de parar, investigue com calma pelo [runbook](../07-pos-go-live/runbook.m
 
 ## O que importa saber antes
 
-**Desativar uma regra não esvazia a fila.** Desativar impede que a regra crie **novos** trabalhos (é o que a HU-07 pede), mas os que já foram criados e estão pendentes continuam sendo executados no próximo ciclo. Isso é um comportamento real do código hoje (`processDueJobs` não confere se a regra está ativa) e está no [roadmap](../07-pos-go-live/retrospectiva.md) como correção. Até lá, **desativar regra não é um botão de parada**: use os níveis abaixo.
+**Desativar uma regra esvazia a fila dela** (RN-19). Até 22/10/2026 não era assim: os envios já criados continuavam saindo. Hoje, ao desativar, os pendentes dessa regra viram `CANCELED` com o motivo "Regra desativada", e o motor confere de novo antes de executar. Isso vale só para a regra desativada; os trabalhos de outras regras seguem. Para parar **tudo** ao mesmo tempo, use os níveis abaixo.
 
 **Nunca use `MESSAGE_PROVIDER=simulated` como forma de parar.** O provedor simulado marca a mensagem como enviada e a registra no histórico do lead sem sair nada, o que bagunça os dados e engana a atendente.
 
@@ -53,9 +53,9 @@ Troque `AUTOMATION_SECRET` na Vercel e faça novo deploy. O app passa a responde
 - Lead que pediu para sair já fica bloqueado sozinho.
 - Para tirar um lead de vez do funil: *Arquivar lead*.
 
-### 5. Desligar as regras
+### 5. Desligar regras uma a uma
 
-Depois de esvaziar a fila (nível 2), desative as regras na tela *Regras*. Em ordem inversa à que foram ligadas.
+Na tela *Regras*, *Desativar*. Cancela o que a regra tinha na fila e impede novos trabalhos. É o caminho para voltar atrás de **uma** regra, em ordem inversa à que foram ligadas, sem parar o resto.
 
 ## Se uma mensagem errada saiu
 

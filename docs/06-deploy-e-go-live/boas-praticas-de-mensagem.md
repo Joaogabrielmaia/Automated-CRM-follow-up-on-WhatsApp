@@ -75,7 +75,13 @@ A mensagem sai em nome da empresa, pelo número configurado. Se a atendente usa 
 
 ## Quando a API oficial do WhatsApp entrar
 
-A Meta só aceita texto livre dentro de 24 h depois da última mensagem do cliente. Fora dessa janela, e para a **primeira** mensagem, exige **modelos aprovados** previamente. Isso muda este guia: os textos acima terão de ser submetidos para aprovação, com as variáveis em posições fixas, e podem ser recusados. É o RSK-08 e é o motivo de o envio real ainda não estar liberado (ver [rollout](rollout.md)).
+A Meta só aceita texto livre dentro de 24 h depois da última mensagem do cliente. Fora dessa janela, e para a **primeira** mensagem, exige **modelos aprovados** previamente (RSK-08). Como funciona no Pulso:
+
+1. Submeta cada texto à Meta como modelo, com as variáveis em posições fixas `{{1}}`, `{{2}}`…, **na mesma ordem em que aparecem no texto do Pulso**. Exemplo: o texto "Oi, {nome}! Recebi seu contato sobre {servico}" vira "Oi, {{1}}! Recebi seu contato sobre {{2}}".
+2. Quando a Meta aprovar, abra o modelo em *Modelos* e preencha "Nome do modelo aprovado na Meta" (minúsculas, números e `_`, como `boas_vindas_v1`).
+3. Com o nome preenchido, o Pulso envia o modelo e usa as variáveis do texto, na ordem, como parâmetros. Sem o nome, envia texto livre, que só chega dentro da janela de 24 h.
+
+A Meta pode recusar o texto; ajuste e submeta de novo. Por isso o envio real só é ligado na fase 3 do [rollout](rollout.md).
 
 ## Revisão
 

@@ -10,7 +10,7 @@
 |---|---|
 | **Must** | RF-01, 02, 04, 05, 07, 08, 09, 10, 13, 14; RN-01 a RN-06, RN-11, RN-14; RNF-01, 02, 03, 08, 09 |
 | **Should** | RF-03, 06, 11, 12, 15, 16, 17, 18, 19; RN-07 a RN-10, RN-12, RN-13, RN-15, RN-16; RNF-04, 05, 07 |
-| **Could** | Arrastar e soltar no quadro; exportar leads em CSV; filtros salvos |
+| **Could** | Arrastar e soltar no quadro; exportar leads em CSV; filtros salvos. Importar leads por CSV (RF-20) foi puxado para dentro por ser necessário à migração da planilha |
 | **Won't (agora)** | Ver "Fora do escopo" |
 
 ## Escopo do MVP
