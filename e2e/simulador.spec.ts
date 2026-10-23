@@ -1,8 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ATTENDANT, loginAs } from "./helpers";
+import { open, ATTENDANT, loginAs } from "./helpers";
 
 async function simulate(page: Page, phone: string, text?: string) {
-  await page.goto("/simulador");
+  await open(page, "/simulador");
   await page.getByLabel("Lead que responde").selectOption(phone);
   if (text) await page.getByLabel("Mensagem").fill(text);
   await page.getByRole("button", { name: "Enviar resposta do lead" }).click();
@@ -16,7 +16,7 @@ test.describe("simulador de lead", () => {
 
     await expect(page.getByRole("status")).toContainText("a sequência foi interrompida");
 
-    await page.goto("/funil");
+    await open(page, "/funil");
     await page.getByRole("link", { name: "Bruno Lima" }).click();
     await expect(page.getByText("Oi! Pode ser amanhã de manhã?")).toBeVisible();
     await expect(page.getByText("Responder Bruno: o lead escreveu")).toBeVisible();
@@ -28,7 +28,7 @@ test.describe("simulador de lead", () => {
 
     await expect(page.getByRole("status")).toContainText("pediu para sair");
 
-    await page.goto("/funil");
+    await open(page, "/funil");
     await page.getByRole("link", { name: "Carla Mendes" }).click();
     await expect(page.getByText("Pediu para sair").first()).toBeVisible();
     // A atendente não vê o botão que só o dono tem.

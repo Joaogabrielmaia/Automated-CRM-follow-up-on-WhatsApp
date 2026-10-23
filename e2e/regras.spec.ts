@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, loginAs } from "./helpers";
+import { open, ADMIN, loginAs } from "./helpers";
 
 // RF-08, RN-16, RN-17
 test.describe("regras de automação", () => {
   test("o dono cria uma regra desligada e depois liga e desliga", async ({ page }) => {
     const name = `Lembrete ${Date.now()}`;
     await loginAs(page, ADMIN);
-    await page.goto("/regras");
+    await open(page, "/regras");
 
     const form = page.getByRole("region", { name: "Nova regra" });
     await form.getByLabel("Nome da regra").fill(name);
@@ -31,7 +31,7 @@ test.describe("regras de automação", () => {
 
   test("campo obrigatório da ação aparece como erro, não como tela quebrada", async ({ page }) => {
     await loginAs(page, ADMIN);
-    await page.goto("/regras");
+    await open(page, "/regras");
     const form = page.getByRole("region", { name: "Nova regra" });
     await form.getByLabel("Nome da regra").fill(`Sem título ${Date.now()}`);
     await form.getByLabel("Depois de", { exact: true }).fill("1");

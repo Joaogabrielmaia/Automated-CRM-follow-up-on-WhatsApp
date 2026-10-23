@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Um push novo cancela a execução anterior da mesma branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    # Postgres de verdade, o mesmo da produção. Os testes criam os bancos pulso_test e pulso_e2e sozinhos.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pulso
+          POSTGRES_PASSWORD: pulso
+          POSTGRES_DB: pulso
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pulso"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://pulso:pulso@localhost:5432/pulso?schema=public
+      # Segredos só de CI, sem valor fora daqui.
+      AUTH_SECRET: ci-auth-secret-0123456789abcdef0123456789
+      AUTOMATION_SECRET: ci-automation-secret
+      WEBHOOK_SECRET: ci-webhook-secret
+      MESSAGE_PROVIDER: simulated
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cliente do Prisma
+        run: npx prisma generate
+
+      - name: Tipos
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Testes unitários e de integração
+        run: npm test
+
+      - name: Navegador para o E2E
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes E2E (contra o build de produção)
+        run: npm run test:e2e
+
+      - name: Relatório do Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

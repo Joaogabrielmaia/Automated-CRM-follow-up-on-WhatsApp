@@ -20,7 +20,7 @@ function TaskList({ tasks, overdue }: { tasks: TaskRow[]; overdue?: boolean }) {
             <p className="font-medium text-slate-900">{task.title}</p>
             <p className="text-sm text-slate-600">
               {task.lead && (
-                <Link href={`/leads/${task.lead.id}`} className="text-brand-700 hover:underline">
+                <Link prefetch={false} href={`/leads/${task.lead.id}`} className="text-brand-700 hover:underline">
                   {task.lead.name}
                 </Link>
               )}
@@ -49,7 +49,7 @@ export default async function TodayPage() {
   return (
     <>
       <PageHeader title="O que fazer hoje" subtitle="Tarefas atrasadas, as de hoje e os leads que ainda não responderam.">
-        <Link href="/leads/novo" className="btn-primary">
+        <Link prefetch={false} href="/leads/novo" className="btn-primary">
           Novo lead
         </Link>
       </PageHeader>
@@ -83,7 +83,7 @@ export default async function TodayPage() {
             {view.noReply.map((lead) => (
               <li key={lead.id} className="flex items-center justify-between gap-3 py-3">
                 <div>
-                  <Link href={`/leads/${lead.id}`} className="font-medium text-brand-700 hover:underline">
+                  <Link prefetch={false} href={`/leads/${lead.id}`} className="font-medium text-brand-700 hover:underline">
                     {lead.name}
                   </Link>
                   <p className="text-sm text-slate-600">

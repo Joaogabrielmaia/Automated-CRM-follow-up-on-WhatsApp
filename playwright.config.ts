@@ -17,12 +17,16 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure", locale: "pt-BR", timezoneId: "America/Sao_Paulo" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `npx tsx e2e/prepare-db.ts && npx next dev -p ${PORT}`,
+    // Build de produção, o mesmo que vai para a Vercel: pega erro que o modo dev esconde e não tem compilação a frio.
+    command: `npx tsx e2e/prepare-db.ts && npx next build && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}/api/health`,
     reuseExistingServer: false,
-    timeout: 120_000,
+    stdout: "pipe",
+    stderr: "pipe",
+    timeout: 300_000,
     env: {
       DATABASE_URL: databaseUrl,
+      NEXT_DIST_DIR: ".next-e2e",
       MESSAGE_PROVIDER: "simulated",
       NEXT_PUBLIC_DEMO_ACCOUNTS: "true",
       AUTH_SECRET: process.env.AUTH_SECRET ?? "e2e-auth-secret-0123456789abcdef0123456789",

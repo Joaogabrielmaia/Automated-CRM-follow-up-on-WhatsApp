@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "build:vercel": "prisma generate && prisma migrate deploy && next build",
+    "build:vercel": "prisma generate && node scripts/migrate-deploy.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -16,8 +19,9 @@
     "test:e2e": "playwright test",
     "db:up": "docker compose up -d db",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:deploy": "node scripts/migrate-deploy.mjs",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:pilot": "tsx prisma/seed-pilot.ts",
     "db:reset": "prisma migrate reset --force",
     "simulate:reply": "tsx scripts/simulate-reply.ts",
     "tick": "tsx scripts/tick.ts",

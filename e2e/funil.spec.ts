@@ -1,8 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ATTENDANT, loginAs, uniquePhone } from "./helpers";
+import { open, ATTENDANT, loginAs, uniquePhone } from "./helpers";
 
 async function fillLead(page: Page, name: string, phone: string) {
-  await page.goto("/leads/novo");
+  await open(page, "/leads/novo");
   await page.getByLabel("Nome").fill(name);
   await page.getByLabel("Telefone").fill(phone);
   await page.getByLabel("Origem").selectOption({ label: "Instagram" });
@@ -22,7 +22,7 @@ test.describe("funil e leads", () => {
     await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
     await expect(page.getByText("Lead cadastrado por Camila")).toBeVisible();
 
-    await page.goto("/funil");
+    await open(page, "/funil");
     const novo = page.getByRole("region", { name: /^Novo/ });
     await expect(novo.getByRole("link", { name })).toBeVisible();
 
@@ -34,7 +34,7 @@ test.describe("funil e leads", () => {
     await expect(page.getByRole("status")).toHaveText("Etapa atualizada.");
     await expect(page.getByText("Motivo: Fechou com outra empresa", { exact: true })).toBeVisible();
 
-    await page.goto("/funil");
+    await open(page, "/funil");
     await expect(page.getByRole("region", { name: /^Perdido/ }).getByRole("link", { name })).toBeVisible();
   });
 
@@ -57,7 +57,7 @@ test.describe("funil e leads", () => {
 
   test("busca por nome filtra o quadro e avisa quando não acha nada", async ({ page }) => {
     await loginAs(page, ATTENDANT);
-    await page.goto("/funil");
+    await open(page, "/funil");
     await page.getByLabel("Buscar lead").fill("Carla");
     await page.getByRole("button", { name: "Buscar" }).click();
     await expect(page.getByRole("link", { name: "Carla Mendes" })).toBeVisible();

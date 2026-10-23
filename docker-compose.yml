@@ -16,7 +16,8 @@ services:
       retries: 10
 
   n8n:
-    image: n8nio/n8n:latest
+    # Fixe uma versão no .env (N8N_VERSION) depois de validar o fluxo, para uma atualização não quebrá-lo.
+    image: n8nio/n8n:${N8N_VERSION:-latest}
     profiles: ["n8n"]
     ports:
       - "5678:5678"
@@ -24,9 +25,9 @@ services:
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - TZ=America/Sao_Paulo
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
-      - PULSO_APP_URL=http://host.docker.internal:3000
+      # Local: o app em http://localhost:3000. Publicado: PULSO_APP_URL=https://SEU-APP.vercel.app no .env.
+      - PULSO_APP_URL=${PULSO_APP_URL:-http://host.docker.internal:3000}
       - PULSO_AUTOMATION_SECRET=${AUTOMATION_SECRET}
-      - PULSO_WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - n8n-data:/home/node/.n8n
       - ./automations:/automations:ro

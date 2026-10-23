@@ -52,7 +52,7 @@ export default async function AutomationLogPage({ searchParams }: { searchParams
             {queue.map((job) => (
               <li key={job.id} className="flex flex-wrap justify-between gap-2 py-2">
                 <span>
-                  <Link href={`/leads/${job.lead.id}`} className="font-medium text-brand-700 hover:underline">
+                  <Link prefetch={false} href={`/leads/${job.lead.id}`} className="font-medium text-brand-700 hover:underline">
                     {job.lead.name}
                   </Link>{" "}
                   · {job.rule.name}
@@ -110,7 +110,7 @@ export default async function AutomationLogPage({ searchParams }: { searchParams
                     </td>
                     <td className="py-2 pr-3">
                       {log.leadId ? (
-                        <Link href={`/leads/${log.leadId}`} className="text-brand-700 hover:underline">
+                        <Link prefetch={false} href={`/leads/${log.leadId}`} className="text-brand-700 hover:underline">
                           {log.leadName ?? "Lead"}
                         </Link>
                       ) : (

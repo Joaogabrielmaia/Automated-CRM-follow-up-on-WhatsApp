@@ -44,7 +44,7 @@ export function Stat({ label, value, hint }: { label: string; value: string | nu
 
 export function BackLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="mb-3 inline-block text-sm text-brand-700 hover:underline">
+    <Link prefetch={false} href={href} className="mb-3 inline-block text-sm text-brand-700 hover:underline">
       ← {children}
     </Link>
   );
