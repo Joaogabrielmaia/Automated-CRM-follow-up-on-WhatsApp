@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPhone, normalizePhone } from "@/lib/rules/phone";
+import { formatPhone, normalizePhone, withNinthDigit } from "@/lib/rules/phone";
 
 describe("telefone (RN-13)", () => {
   it.each([
@@ -19,5 +19,17 @@ describe("telefone (RN-13)", () => {
   it("formata para exibir", () => {
     expect(formatPhone("+5531900000101")).toBe("(31) 90000-0101");
     expect(formatPhone("+553130000101")).toBe("(31) 3000-0101");
+  });
+});
+
+describe("celular sem o nono dígito (entrega da Meta)", () => {
+  it("devolve a forma com o 9 para celular antigo", () => {
+    expect(withNinthDigit("+553199990101")).toBe("+5531999990101");
+  });
+
+  it("não mexe em telefone fixo nem em número que já tem o 9", () => {
+    expect(withNinthDigit("+553132220101")).toBeNull();
+    expect(withNinthDigit("+5531999990101")).toBeNull();
+    expect(withNinthDigit("lixo")).toBeNull();
   });
 });

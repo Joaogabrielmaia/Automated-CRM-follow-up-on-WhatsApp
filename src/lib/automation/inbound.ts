@@ -2,7 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { cancelPendingJobs, isUniqueViolation, writeLog } from "@/lib/domain/shared";
 import { isOptOut } from "@/lib/rules/opt-out";
-import { normalizePhone } from "@/lib/rules/phone";
+import { normalizePhone, withNinthDigit } from "@/lib/rules/phone";
 
 export const inboundSchema = z.object({
   eventId: z.string().min(1).max(120),
@@ -27,7 +27,12 @@ const REPLY_TASK_HOURS = 2;
 export async function handleInboundMessage(message: InboundMessage, now: Date = new Date()): Promise<InboundResult> {
   const receivedAt = message.timestamp ? new Date(message.timestamp) : now;
   const phone = normalizePhone(message.from);
-  const lead = phone ? await prisma.lead.findUnique({ where: { phone } }) : null;
+  let lead = phone ? await prisma.lead.findUnique({ where: { phone } }) : null;
+  if (!lead && phone) {
+    // Celular antigo que a Meta entrega sem o 9: o lead foi cadastrado com ele.
+    const withNine = withNinthDigit(phone);
+    if (withNine) lead = await prisma.lead.findUnique({ where: { phone: withNine } });
+  }
 
   try {
     return await prisma.$transaction(async (tx) => {

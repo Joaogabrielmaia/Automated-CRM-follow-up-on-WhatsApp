@@ -18,3 +18,13 @@ export function formatPhone(normalized: string): string {
   if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
   return normalized;
 }
+
+// A Meta entrega alguns celulares antigos do Brasil sem o 9 depois do DDD (+55 31 9999-0101, em vez de
+// +55 31 99999-0101). Devolve a forma com o 9, ou null se o número não for desse tipo (fixo não ganha o 9).
+export function withNinthDigit(normalized: string): string | null {
+  const digits = normalized.replace(/\D/g, "");
+  if (digits.length !== 12 || !digits.startsWith("55")) return null;
+  const number = digits.slice(4);
+  if (!/^[6-9]/.test(number)) return null;
+  return `+55${digits.slice(2, 4)}9${number}`;
+}
