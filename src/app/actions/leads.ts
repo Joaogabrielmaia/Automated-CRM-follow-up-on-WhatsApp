@@ -15,6 +15,7 @@ import {
   setPaused,
   updateLead,
 } from "@/lib/services/leads";
+import { MAX_FILE_BYTES, importLeads } from "@/lib/services/import";
 import { createTask, setTaskDone } from "@/lib/services/tasks";
 import { parseLocalDateTime } from "@/lib/format";
 import { run, text, type FormState } from "./helpers";
@@ -138,4 +139,21 @@ export async function completeTaskAction(taskId: string) {
   await setTaskDone(actor, taskId, true);
   revalidatePath("/");
   revalidatePath("/leads/[id]", "page");
+}
+
+export async function importLeadsAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const actor = await requireUser();
+  const result = await run(async () => {
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) throw new AppError("Escolha o arquivo CSV.", "VALIDATION");
+    if (file.size > MAX_FILE_BYTES) throw new AppError("O arquivo passou de 1 MB.", "VALIDATION");
+    const outcome = await importLeads(actor, await file.text(), { pauseAutomation: formData.get("pause") === "on" });
+    const head = `${outcome.created} lead(s) importado(s).`;
+    if (outcome.skipped.length === 0) return head;
+    const shown = outcome.skipped.slice(0, 10).map((s) => `linha ${s.line}: ${s.message}`).join(" · ");
+    const more = outcome.skipped.length > 10 ? ` · e mais ${outcome.skipped.length - 10}` : "";
+    return `${head} ${outcome.skipped.length} linha(s) ignorada(s): ${shown}${more}`;
+  });
+  revalidatePath("/funil");
+  return result;
 }

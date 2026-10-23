@@ -29,7 +29,10 @@ export default async function FunnelPage({ searchParams }: { searchParams: Promi
           <input id="q" name="q" defaultValue={q} placeholder="Buscar por nome ou telefone" className="input w-56" />
           <button className="btn-secondary">Buscar</button>
         </form>
-        <Link href="/leads/novo" className="btn-primary">
+        <Link prefetch={false} href="/leads/importar" className="btn-secondary">
+          Importar CSV
+        </Link>
+        <Link prefetch={false} href="/leads/novo" className="btn-primary">
           Novo lead
         </Link>
       </PageHeader>
@@ -50,7 +53,7 @@ export default async function FunnelPage({ searchParams }: { searchParams: Promi
             <ul className="space-y-3">
               {stage.leads.map((lead) => (
                 <li key={lead.id} className="card p-3">
-                  <Link href={`/leads/${lead.id}`} className="font-medium text-slate-900 hover:underline">
+                  <Link prefetch={false} href={`/leads/${lead.id}`} className="font-medium text-slate-900 hover:underline">
                     {lead.name}
                   </Link>
                   <p className="text-sm text-slate-600">{lead.interest ?? "Sem interesse informado"}</p>
