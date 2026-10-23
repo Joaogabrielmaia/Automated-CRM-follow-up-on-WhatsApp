@@ -2,7 +2,7 @@ import type { Prisma, PrismaClient, RuleAction, RuleTrigger, StageKind } from "@
 
 // Dados iniciais para um piloto de verdade: etapas, configuração, modelos e regras. Sem contas de
 // demonstração e sem leads fictícios. TODAS as regras nascem desligadas (HU-07): quem liga é o Admin,
-// uma por vez, na ordem do plano de rollout (docs/06-deploy-e-go-live/rollout.md).
+// uma por vez, na ordem do plano de rollout (docs/06-go-live/rollout.md).
 
 const HOURS = { "0": null, "1": { start: "08:00", end: "18:00" }, "2": { start: "08:00", end: "18:00" }, "3": { start: "08:00", end: "18:00" }, "4": { start: "08:00", end: "18:00" }, "5": { start: "08:00", end: "18:00" }, "6": { start: "08:00", end: "12:00" } };
 
@@ -15,7 +15,7 @@ export const PILOT_STAGES: { name: string; kind: StageKind }[] = [
   { name: "Perdido", kind: "LOST" },
 ];
 
-// Textos de docs/06-deploy-e-go-live/boas-praticas-de-mensagem.md. Troque o nome da empresa na tela Modelos.
+// Textos de docs/06-go-live/boas-praticas-de-mensagem.md. Troque o nome da empresa na tela Modelos.
 export const PILOT_TEMPLATES = [
   {
     key: "welcome",

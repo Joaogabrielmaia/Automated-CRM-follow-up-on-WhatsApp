@@ -32,7 +32,7 @@ Em produção com a API oficial, trocaria para a validação nativa deles e, se 
 
 ## Revisão de 23/10/2026: entrada nativa da Meta
 
-O trade-off acima previa um adaptador no n8n para a API oficial. Ao detalhar o go-live, o adaptador se mostrou pior que a alternativa: ele exigiria um n8n com endereço público e HTTPS, enquanto o app na Vercel já é público.
+O trade-off acima previa um adaptador no n8n para a API oficial. Ao detalhar o go-live, o adaptador se mostrou pior que a alternativa: ele exigiria um n8n com endereço público e HTTPS, enquanto o app já expõe rotas HTTP.
 
 Passou a existir uma segunda rota, **`/api/webhooks/whatsapp-cloud`**, que fala o formato da Meta:
 

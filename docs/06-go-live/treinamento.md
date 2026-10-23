@@ -63,4 +63,4 @@ Quem não conseguir refaz o bloco, não avança para o piloto.
 
 ## O que o treinamento não cobre
 
-Instalação, banco, n8n e deploy. Isso é com quem opera o sistema (ver [deploy](deploy.md) e [runbook](../07-pos-go-live/runbook.md)).
+Instalação, banco e n8n. Isso é com quem opera o sistema (ver [n8n](n8n.md) e [runbook](../07-pos-go-live/runbook.md)).

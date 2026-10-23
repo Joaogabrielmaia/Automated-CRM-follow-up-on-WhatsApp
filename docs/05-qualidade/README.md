@@ -51,9 +51,9 @@ Cada tipo de teste usa um banco próprio, para nenhum deles apagar os dados de d
 
 Fica registrado para não parecer mais pronto do que está.
 
-- **WhatsApp Cloud API de verdade.** O envio, o envio de modelo e o webhook da Meta foram escritos conforme a documentação pública e testados com a rede e os payloads simulados por mim. **Nunca falaram com a Meta.** A Meta pode devolver um erro ou um formato que eu não previ. Antes de usar com clientes reais, é preciso testar na sandbox da Meta (ver [checklist](../06-deploy-e-go-live/checklist.md), seção C).
-- **Vercel e Neon.** O deploy em si não foi executado. A parte que depende só do código (migrations em banco vazio, build, app de produção) foi.
-- **CI no GitHub.** O workflow existe e o YAML é válido, mas nunca rodou lá.
+- **WhatsApp Cloud API de verdade.** O envio, o envio de modelo e o webhook da Meta foram escritos conforme a documentação pública e testados com a rede e os payloads simulados por mim. **Nunca falaram com a Meta.** A Meta pode devolver um erro ou um formato que eu não previ. Antes de usar com clientes reais, é preciso testar na sandbox da Meta (ver [rollout](../06-go-live/rollout.md), seção C).
+- **Hospedagem.** O projeto não foi publicado em nenhum servidor: é para ser rodado localmente. O que depende só do código (migrations em banco vazio, build de produção) foi testado.
+- **CI no GitHub.** O workflow existe e o YAML é válido; conferir o resultado na aba *Actions*.
 - **Agendamento contínuo do n8n.** Executei a chamada uma vez; não deixei o agendador rodando por horas.
 - **Navegadores.** O E2E roda só em Chromium.
 - **Acessibilidade.** Há rótulos e papéis ARIA nos formulários e os seletores dos testes dependem deles, mas não rodei verificação automática (por exemplo axe) nem testei com leitor de tela.

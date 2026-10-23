@@ -38,7 +38,7 @@ Projeto, banco, autenticação e papéis, CRUD de leads, etapas configuráveis, 
 Modelos, regras, provedor (interface, simulado e API oficial), motor de regras, fila com horário comercial, idempotência, retentativa, webhook, opt-out, parada por resposta, orçamento sem retorno, pausa por lead, n8n.
 
 ### Sprint 3: visão e qualidade (HU-14, HU-15)
-Painel, log, simulador, estados de erro e vazio, acessibilidade, E2E, CI, deploy.
+Painel, log, simulador, estados de erro e vazio, acessibilidade, E2E, CI.
 
 ## Definition of Ready
 

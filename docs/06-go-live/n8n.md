@@ -2,7 +2,7 @@
 
 **Objetivo:** configurar o n8n para chamar o ciclo da automação a cada 5 minutos e dizer o que ele faz e o que não faz.
 **Data:** 23/10/2026 · **Status:** o fluxo está versionado em `automations/tick.json`. **Testado:** importa no n8n e executa a chamada autenticada ao ciclo (o app registrou o ciclo). **Não testado:** o agendamento de 5 em 5 minutos rodando por horas.
-**Relacionados:** [deploy](deploy.md) · [ADR-001](../03-arquitetura/adr/ADR-001-n8n-ou-jobs-em-codigo.md) · [ADR-009](../03-arquitetura/adr/ADR-009-hospedagem.md) · [runbook](../07-pos-go-live/runbook.md)
+**Relacionados:** [ADR-001](../03-arquitetura/adr/ADR-001-n8n-ou-jobs-em-codigo.md) · [runbook](../07-pos-go-live/runbook.md)
 
 ## O que o n8n faz e o que não faz
 
@@ -16,8 +16,8 @@ O serviço está no `docker-compose.yml` sob o perfil `n8n`, então não sobe ju
 
 | No `.env` | Padrão | Para quê |
 |---|---|---|
-| `AUTOMATION_SECRET` | (obrigatório) | Autoriza o ciclo. Precisa ser **igual** ao da Vercel |
-| `PULSO_APP_URL` | vazio = `http://host.docker.internal:3000` (app local) | Endereço do app. Publicado: `https://SEU-APP.vercel.app` |
+| `AUTOMATION_SECRET` | (obrigatório) | Autoriza o ciclo. Precisa ser **igual** ao do app |
+| `PULSO_APP_URL` | vazio = `http://host.docker.internal:3000` (app local) | Endereço do app |
 | `N8N_VERSION` | vazio = a mais recente | Fixe uma versão depois de validar o fluxo |
 
 ```bash
@@ -54,14 +54,14 @@ Depois:
 
 ### Parar
 
-Desative o fluxo (interruptor **Active**). É a forma mais rápida de parar tudo; ver [rollback](../06-deploy-e-go-live/rollback.md).
+Desative o fluxo (interruptor **Active**). É a forma mais rápida de parar tudo; ver [rollback](rollback.md).
 
 ## Alerta de agendador parado
 
-O n8n sozinho não avisa quando ele mesmo para. Use um monitor externo no `https://SEU-APP.vercel.app/api/health?strict=1`: ele devolve **503** quando há regra ativa e o último ciclo passou de 15 minutos (ou nunca rodou). Ver [deploy](deploy.md), passo 10.
+O n8n sozinho não avisa quando ele mesmo para. Um monitor externo pode consultar `/api/health?strict=1`: ele devolve **503** quando há regra ativa e o último ciclo passou de 15 minutos (ou nunca rodou).
 
 ## Para um piloto de verdade
 
-- Mover o n8n para um VPS pequeno com Docker, com backup do volume `n8n-data`, no dia do primeiro usuário real (ADR-009).
+- Mover o n8n para um VPS pequeno com Docker, com backup do volume `n8n-data`, no dia do primeiro usuário real.
 - Definir `N8N_VERSION` com uma versão fixa, para uma atualização automática não quebrar o fluxo.
 - Não expor a porta 5678 sem autenticação.

@@ -18,7 +18,7 @@ Se um dia eu conversar com um dono de pequena empresa de verdade, com autorizaç
 3. `03-arquitetura/` — ADRs, modelo de dados, fluxo da automação, segurança e modos de falha.
 4. `04-prototipo/` — wireframes e o registro de validação do protótipo.
 5. `05-qualidade/` — estratégia de testes, resultado real da última execução e limitações.
-6. `06-deploy-e-go-live/` — deploy, n8n, rollout, checklist, rollback, treinamento e roteiro de vídeo.
+6. `06-go-live/` — n8n, plano de rollout, rollback, treinamento e boas práticas de mensagem.
 7. `07-pos-go-live/` — runbook, indicadores, retrospectiva, v1.1, roadmap.
 8. `entrevista/` — resumo e três perguntas de entrevista por fase.
 9. `vitrine/` — textos para currículo, LinkedIn e respostas curtas.

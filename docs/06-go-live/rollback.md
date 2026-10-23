@@ -1,8 +1,8 @@
 # Rollback
 
-**Objetivo:** dizer como parar a automação, desfazer o estrago e voltar uma versão, do mais rápido ao mais invasivo.
+**Objetivo:** dizer como parar a automação e desfazer o estrago, do mais rápido ao mais invasivo.
 **Data:** 23/10/2026 · **Status:** atualizado em 23/10/2026. Os comportamentos descritos estão cobertos por teste automatizado; **o ensaio num ambiente real ainda não foi feito**
-**Relacionados:** [runbook](../07-pos-go-live/runbook.md) · [modos de falha](../03-arquitetura/05-modos-de-falha.md) · [rollout](rollout.md) · [checklist](checklist.md)
+**Relacionados:** [runbook](../07-pos-go-live/runbook.md) · [modos de falha](../03-arquitetura/05-modos-de-falha.md) · [rollout](rollout.md)
 
 ## Quando voltar atrás
 
@@ -33,7 +33,7 @@ Limite: o botão *Rodar ciclo agora* (Admin, tela Automação) ainda funciona. N
 
 ### 2. Esvaziar a fila (1 minuto)
 
-Cancela o que está pendente. Rode no console SQL do Neon:
+Cancela o que está pendente. Rode no console SQL do banco:
 
 ```sql
 UPDATE "AutomationJob"
@@ -45,7 +45,7 @@ Confira antes quantos serão afetados: `SELECT count(*) FROM "AutomationJob" WHE
 
 ### 3. Travar o endpoint (2 minutos)
 
-Troque `AUTOMATION_SECRET` na Vercel e faça novo deploy. O app passa a responder 401 para o n8n com o valor antigo. Use se houver suspeita de que outra pessoa ou outro n8n esteja chamando o ciclo.
+Troque `AUTOMATION_SECRET` no `.env` e reinicie o app. O app passa a responder 401 para o n8n com o valor antigo. Use se houver suspeita de que outra pessoa ou outro n8n esteja chamando o ciclo.
 
 ### 4. Por lead
 
@@ -74,14 +74,6 @@ Mensagem enviada não se desfaz. O que dá para fazer:
    ```
 3. A Camila fala pessoalmente com cada pessoa, com uma explicação curta e um pedido de desculpa, sem mandar outra mensagem automática.
 4. Registre o ocorrido na linha do tempo de cada lead (*Nota*) e na [retrospectiva](../07-pos-go-live/retrospectiva.md).
-
-## Voltar uma versão do app
-
-1. Na Vercel, abra o deploy anterior que funcionava e restaure-o (*Instant Rollback* / promover). Leva minutos.
-2. **Isso não desfaz mudanças de banco.** O Prisma aqui não tem migration de volta. Por isso:
-   - Cada mudança de banco deve ser **aditiva** (nova tabela, nova coluna opcional). Apagar ou renomear coluna é feito em dois deploys, com o código parando de usar antes.
-   - A versão antiga do código precisa continuar funcionando com o banco novo. Teste isso antes de fazer a migration.
-3. Se a migration for o problema, restaure o banco a partir do backup do Neon para um ponto anterior ao deploy. Isso apaga o que foi escrito depois (leads, interações), então só como último recurso e com o Marcos avisado. **Ensaiar a restauração uma vez** está no [checklist](checklist.md).
 
 ## Depois de qualquer rollback
 

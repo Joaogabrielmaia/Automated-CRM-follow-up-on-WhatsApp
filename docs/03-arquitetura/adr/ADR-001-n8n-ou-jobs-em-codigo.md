@@ -2,7 +2,7 @@
 
 **Objetivo:** decidir quem orquestra a automação e onde ficam as regras.
 **Data:** 22/10/2026 · **Status:** aceita
-**Relacionados:** [ADR-004](ADR-004-agendamento-e-fila.md) · [ADR-009](ADR-009-hospedagem.md) · [modos de falha](../05-modos-de-falha.md)
+**Relacionados:** [ADR-004](ADR-004-agendamento-e-fila.md) · [modos de falha](../05-modos-de-falha.md)
 
 ## Contexto
 

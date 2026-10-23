@@ -14,3 +14,4 @@ coverage
 .next-e2e
 .neon
 .neon.env
+.deploy-secrets.env

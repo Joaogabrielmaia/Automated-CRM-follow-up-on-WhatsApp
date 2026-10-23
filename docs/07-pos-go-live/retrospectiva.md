@@ -2,7 +2,7 @@
 
 **Objetivo:** registrar o que funcionou, o que não funcionou e o que muda, para a próxima etapa.
 **Data:** 23/10/2026 · **Status:** exemplo para eu reescrever com as minhas próprias impressões
-**Relacionados:** [qualidade](../05-qualidade/README.md) · [metas](../02-definicao/01-visao-e-metas.md) · [rollout](../06-deploy-e-go-live/rollout.md) · [riscos](../02-definicao/06-riscos.md) · [ADR-010](../03-arquitetura/adr/ADR-010-sem-loading-tsx.md)
+**Relacionados:** [qualidade](../05-qualidade/README.md) · [metas](../02-definicao/01-visao-e-metas.md) · [rollout](../06-go-live/rollout.md) · [riscos](../02-definicao/06-riscos.md) · [ADR-010](../03-arquitetura/adr/ADR-010-sem-loading-tsx.md)
 
 > **Sobre este documento.** Foi escrito por uma IA (Claude) a pedido do autor, como modelo. Ele só afirma o que dá para conferir no repositório, no histórico do git e na sessão de trabalho de 22 e 23/10/2026. **Não há usuário real, piloto nem medição**: nada aqui fala de comportamento de cliente, e as metas M1 a M6 continuam sem medida. Onde falta experiência de uso, o texto diz isso em vez de inventar. O que está em "O que eu senti e o que aprendi" é espaço para o autor trocar pelo que realmente pensa.
 
@@ -11,7 +11,7 @@
 - O motor da automação ficou sólido e bem testado: 200 testes de unidade e integração mais 16 de ponta a ponta, todos passando, e o E2E roda contra o build de produção.
 - A documentação estava **à frente do código** em vários pontos. Isso foi corrigido, e as lacunas que o preparo do go-live revelou foram fechadas no código, menos as que dependem de conta externa.
 - O achado mais valioso foi um defeito que **só existia em produção**: ações que ficavam em "Salvando…" ou não atualizavam a tela.
-- Ninguém usou o Pulso ainda. Tudo o que se sabe sobre "funciona para a Camila" é hipótese, e a Meta, a Vercel e o Neon nunca foram tocados.
+- Ninguém usou o Pulso ainda. Tudo o que se sabe sobre "funciona para a Camila" é hipótese, e a Meta nunca foi tocada.
 
 ## O que foi entregue
 
@@ -23,7 +23,7 @@
 | Automação | Motor com idempotência, reserva atômica, retentativa, horário comercial, recuperação de job travado, registro de atraso; entrada de respostas (formato do Pulso e nativo da Meta) |
 | Telas | Hoje, Funil, Lead, Modelos, Regras, Automação (log), Painel, Simulador, Configurações, Importar CSV |
 | Qualidade | 111 unitários, 89 de integração, 16 E2E, em bancos separados; CI escrita |
-| Go-live | Deploy, n8n (fluxo versionado e testado), boas práticas, checklist, rollback, rollout, treinamento, runbook, seed de piloto, script de contas |
+| Go-live | n8n (fluxo versionado e testado), boas práticas, rollback, rollout, treinamento, runbook, seed de piloto, script de contas |
 
 ## O que funcionou
 
@@ -31,7 +31,7 @@
 2. **A restrição única no banco como garantia de idempotência.** O teste com dois ciclos simultâneos mostrou o envio acontecendo uma vez só.
 3. **Documentar os "porquês" em ADRs.** Quando uma dúvida surgiu, a resposta já estava escrita. Quando a realidade mudou (webhook nativo da Meta, fim do `loading.tsx`), o ADR ganhou uma revisão ou um irmão novo em vez de ficar desatualizado.
 4. **Verificar se os testes pegam erro.** Os primeiros 19 testes de integração passaram de primeira, o que é suspeito. Quebrei de propósito o intervalo mínimo e uma permissão, e três testes falharam como deveriam.
-5. **Testar o caminho do piloto do zero** (banco vazio, migrations, seed, contas, login). Era o que o deploy real ia fazer, e deu para provar que funciona antes.
+5. **Testar o caminho do piloto do zero** (banco vazio, migrations, seed, contas, login). Era o que um piloto real ia fazer, e deu para provar que funciona antes.
 6. **Medir antes de culpar.** Para o travamento das ações, a primeira hipótese (prefetch dos links) estava errada. Só repetir a ação dezenas de vezes e comparar variantes apontou a causa de fato.
 
 ## O que não funcionou
@@ -55,15 +55,15 @@ Cada item aconteceu e deixou rastro verificável.
 | 3 | Adaptador da Meta só enviava texto livre | **Código pronto** (modelo aprovado com parâmetros), testado com rede simulada. **Falta** aprovação na Meta e teste real |
 | 4 | Não havia como receber respostas da Meta | **Código pronto**: rota nativa `/api/webhooks/whatsapp-cloud`, testada com payloads meus. **Falta** cadastrar e testar na Meta |
 | 5 | Pasta `automations/` vazia | **Corrigido**: `tick.json` importa e executa num n8n real |
-| 6 | Migration pelo pooler do Neon | **Mitigado**: `DIRECT_URL` usada só nas migrations. **Falta** conferir no primeiro deploy |
-| 7 | Sem CI e sem remoto git | **CI escrita**; **falta** o repositório no GitHub (depende do autor) |
+| 6 | Migration por conexão com pooler pode travar | **Removida do escopo**: o projeto roda com Postgres local e não tem hospedagem |
+| 7 | Sem CI e sem remoto git | **Corrigido**: repositório no GitHub e workflow de CI |
 | 8 | Sem importação de leads | **Corrigido**: Importar CSV (RF-20) |
 | 9 | Log "Atrasado" prometido e ausente | **Corrigido** |
 | 10 | Sem alerta de agendador parado | **Parcial**: `/api/health?strict=1` devolve 503; **falta** cadastrar o monitor externo |
 | 11 | Piloto exigia montar etapas, modelos e regras à mão | **Corrigido**: `npm run db:seed:pilot` |
 | 12 | `loading.tsx` travando ações em produção | **Corrigido** (ADR-010) |
 
-Os itens 3, 4, 6, 7 e 10 só se encerram com contas externas (Meta, Neon, GitHub, monitor). Por isso o [rollout](../06-deploy-e-go-live/rollout.md) continua começando **sem envio**: só lembretes para a atendente.
+Os itens 3, 4 e 10 só se encerram com contas externas (Meta, monitor). Por isso o [rollout](../06-go-live/rollout.md) continua começando **sem envio**: só lembretes para a atendente.
 
 ## Metas: o que se sabe
 
@@ -85,17 +85,15 @@ Os itens 3, 4, 6, 7 e 10 só se encerram com contas externas (Meta, Neon, GitHub
 2. **Rodar o E2E contra o build de produção desde o início.** O defeito do `loading.tsx` teria aparecido na primeira semana, e não no último dia.
 3. **Escrever a matriz de rastreabilidade a partir do que existe**, ou gerá-la, em vez de preencher com o que está planejado.
 4. **Criar a CI e o remoto no começo.** Com testes assim, um workflow de poucas linhas já daria o "CI verde" do Definition of Done.
-5. **Começar o go-live por uma lista de "o que quebra no mundo real"**, antes de escrever os guias. As lacunas 1, 2, 3 e 4 só apareceram quando tentei descrever um deploy passo a passo.
+5. **Começar o go-live por uma lista de "o que quebra no mundo real"**, antes de escrever os guias. As lacunas 1, 2, 3 e 4 só apareceram quando tentei descrever o go-live passo a passo.
 6. **Testar o adaptador do WhatsApp na sandbox da Meta mais cedo**, porque a exigência de modelos muda o produto, não só a integração.
 
 ## Ações
 
 | Prioridade | Ação | Origem |
 |---|---|---|
-| Alta | Criar o repositório privado no GitHub, dar o primeiro push e ver a CI ficar verde | Lacuna 7 |
-| Alta | Fazer o primeiro deploy (Neon + Vercel) e conferir `[migrate] usando DIRECT_URL` | Lacuna 6 |
-| Alta | Ligar o n8n com `PULSO_APP_URL` publicado, ativar o fluxo e cadastrar o monitor em `/api/health?strict=1` | Lacunas 5 e 10 |
-| Alta | Rodar o [treinamento](../06-deploy-e-go-live/treinamento.md) e começar a fase 1 do rollout | Rollout |
+| Alta | Ligar o n8n, ativar o fluxo e cadastrar o monitor em `/api/health?strict=1` | Lacunas 5 e 10 |
+| Alta | Rodar o [treinamento](../06-go-live/treinamento.md) e começar a fase 1 do rollout | Rollout |
 | Média | Abrir conta WhatsApp Business, submeter os modelos e testar envio e webhook na sandbox da Meta; anotar divergências | Lacunas 3 e 4 |
 | Média | Alerta ativo por e-mail quando o monitor externo disparar | RSK-04 |
 | Baixa | Teste automatizado do fluxo "O que fazer hoje em dois cliques" e verificação automática de acessibilidade | [qualidade](../05-qualidade/README.md) |

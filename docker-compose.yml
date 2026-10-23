@@ -25,7 +25,7 @@ services:
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - TZ=America/Sao_Paulo
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
-      # Local: o app em http://localhost:3000. Publicado: PULSO_APP_URL=https://SEU-APP.vercel.app no .env.
+      # O app local roda em http://localhost:3000.
       - PULSO_APP_URL=${PULSO_APP_URL:-http://host.docker.internal:3000}
       - PULSO_AUTOMATION_SECRET=${AUTOMATION_SECRET}
     volumes:

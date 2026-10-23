@@ -2,7 +2,7 @@
 
 **Objetivo:** dizer a quem opera o Pulso o que olhar todo dia, o que fazer quando algo falha e o que não fazer.
 **Data:** 23/10/2026 · **Status:** atualizado em 23/10/2026, a partir do código e dos [modos de falha](../03-arquitetura/05-modos-de-falha.md); **nenhum procedimento foi ensaiado em produção**
-**Relacionados:** [rollback](../06-deploy-e-go-live/rollback.md) · [n8n](../06-deploy-e-go-live/n8n.md) · [deploy](../06-deploy-e-go-live/deploy.md) · [riscos](../02-definicao/06-riscos.md)
+**Relacionados:** [rollback](../06-go-live/rollback.md) · [n8n](../06-go-live/n8n.md) · [riscos](../02-definicao/06-riscos.md)
 
 ## Papéis
 
@@ -10,7 +10,7 @@
 |---|---|
 | Camila (atendente) | Olha *Hoje* todo dia, conclui tarefas, avisa o Marcos de qualquer coisa estranha, **sem mexer** |
 | Marcos (dono, Admin) | Decide pausar, para a automação, remove opt-out, olha o painel |
-| Quem opera (eu, no piloto) | Banco, Vercel, n8n, segredos, correções |
+| Quem opera (eu, no piloto) | Banco, n8n, segredos, correções |
 
 ## Onde olhar
 
@@ -39,19 +39,19 @@ Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensage
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
 | "Último ciclo" com mais de 15 minutos (`automation: stale` no health; o monitor externo avisa) | n8n parado, fluxo desativado, ou o app responde erro | 1) n8n → *Executions*: há execuções? 2) Se vermelhas, ver a mensagem (401 = segredos diferentes; 5xx = ver `/api/health`). 3) Admin: *Rodar ciclo agora*. Quando o ciclo volta, ele recupera o atraso sozinho, respeitando o horário, e o log mostra o evento **Atrasado** nos envios que passaram de 15 minutos |
-| `/api/health` devolve 503 | Banco do Neon inacessível ou `DATABASE_URL` errada | Abrir o painel do Neon. Se o banco "dormiu", a próxima chamada o acorda; repetir após 30 s. Se foi mudança de variável, voltar o valor e refazer o deploy |
-| n8n com 401 no ciclo | `AUTOMATION_SECRET` diferente entre n8n e Vercel | Igualar os dois. O n8n lê do `.env` local ou do `docker-compose.override.yml` |
+| `/api/health` devolve 503 | Banco inacessível ou `DATABASE_URL` errada | Conferir se o Postgres está no ar. Se foi mudança de variável, voltar o valor e reiniciar o app |
+| n8n com 401 no ciclo | `AUTOMATION_SECRET` diferente entre n8n e app | Igualar os dois. O n8n lê do `.env` local ou do `docker-compose.override.yml` |
 | n8n com erro de rede/timeout | App fora do ar, ou banco acordando | Ver health. O fluxo tenta 3 vezes sozinho |
 | Muitos **Falha** com "Erro definitivo do provedor" | Número do lead inválido (um caso) ou token do WhatsApp inválido (todos) | Um caso: a tarefa "Verificar contato" avisa a Camila. Todos: parar (rollback nível 1) e conferir `WHATSAPP_ACCESS_TOKEN` |
 | **Falha** com "Tentativas esgotadas" | Provedor instável durante 4 tentativas | Camila liga/escreve para o lead (tarefa criada). Se afetar vários, parar e conferir o provedor |
 | Tarefa "Conferir se a mensagem para X foi enviada" (Estado incerto) | O processo caiu depois de reservar o envio; não dá para saber se saiu | **Não reenviar às cegas.** Conferir no WhatsApp Business ou no painel da Meta se a mensagem existe. Se saiu, concluir a tarefa. Se não saiu, a Camila contata o lead manualmente |
-| Mensagens com status *Pulado* e "Faltou dado do lead" | O modelo usa `{servico}` ou `{valor}` e o lead não tem | Preencher o dado no lead, ou trocar o modelo (ver [boas práticas](../06-deploy-e-go-live/boas-praticas-de-mensagem.md)). A mensagem pulada **não** é reenviada depois: o ciclo daquele envio acabou |
-| Webhook da Meta (`/api/webhooks/whatsapp-cloud`) responde 401 | `WHATSAPP_APP_SECRET` diferente do segredo do app na Meta | Copiar de novo o segredo do app (Configurações do app → Básico) e refazer o deploy |
-| Meta não consegue verificar a URL do webhook (403) | `WHATSAPP_VERIFY_TOKEN` diferente do digitado na Meta, ou não definido | Igualar os dois e refazer o deploy |
+| Mensagens com status *Pulado* e "Faltou dado do lead" | O modelo usa `{servico}` ou `{valor}` e o lead não tem | Preencher o dado no lead, ou trocar o modelo (ver [boas práticas](../06-go-live/boas-praticas-de-mensagem.md)). A mensagem pulada **não** é reenviada depois: o ciclo daquele envio acabou |
+| Webhook da Meta (`/api/webhooks/whatsapp-cloud`) responde 401 | `WHATSAPP_APP_SECRET` diferente do segredo do app na Meta | Copiar de novo o segredo do app (Configurações do app → Básico) e reiniciar o app |
+| Meta não consegue verificar a URL do webhook (403) | `WHATSAPP_VERIFY_TOKEN` diferente do digitado na Meta, ou não definido | Igualar os dois e reiniciar o app |
 | Webhook no formato do Pulso (`/api/webhooks/whatsapp`) responde 401 | `WEBHOOK_SECRET` diferente, ou a assinatura foi calculada sobre um texto diferente do enviado | Igualar o segredo; o corpo assinado precisa ser exatamente o enviado |
 | Respostas dos leads não aparecem | Webhook da Meta não cadastrado/assinando `messages`, ou número do remetente sem lead | Conferir o painel de webhooks da Meta; no log da Automação, procurar "Remetente desconhecido". Na fase 1 (sem envio) não há resposta pelo sistema: a conversa é no WhatsApp da Camila |
 | Suspeita de mensagem duplicada | — | Parar (rollback 1). Procurar: `SELECT "leadId", body, count(*) FROM "Interaction" WHERE type = 'MESSAGE_OUT' GROUP BY "leadId", body HAVING count(*) > 1;` A chave de idempotência é única no banco, então uma duplicata de verdade seria um defeito grave: guarde o que viu |
-| Lead recebeu mensagem depois de pedir SAIR | — | Parar já. Tratar como incidente: [rollback](../06-deploy-e-go-live/rollback.md), seção "Se uma mensagem errada saiu" |
+| Lead recebeu mensagem depois de pedir SAIR | — | Parar já. Tratar como incidente: [rollback](../06-go-live/rollback.md), seção "Se uma mensagem errada saiu" |
 | Desativei a regra e mesmo assim saiu mensagem | Desativar cancela a fila da regra (RN-19). Se saiu, o envio já estava em andamento (`SENDING`) quando desativei, ou foi outra regra | Conferir o log do lead para ver qual regra enviou. Para parar tudo, rollback nível 1 e 2 |
 | Fiz uma ação (salvar, ativar) e a tela não mudou, ou o botão ficou em "Salvando…" | Defeito conhecido que a remoção do `loading.tsx` corrigiu (ADR-010). Se voltar, alguém recolocou um `loading.tsx` ou `Suspense` em volta das páginas | Recarregar a página mostra o estado verdadeiro. Reportar: o E2E deve falhar de forma intermitente |
 | Mensagem pulada com "Parâmetros do modelo aprovado incompletos" | O modelo tem nome da Meta preenchido e o lead não tem algum dado do texto | Preencher o dado no lead ou usar um modelo sem essa variável |
@@ -62,7 +62,7 @@ Motivos mais comuns: Fora do horário comercial, Intervalo mínimo entre mensage
 **Rodar um ciclo à mão** (Admin): tela *Automação* → *Rodar ciclo agora*. Ou:
 
 ```bash
-curl -X POST -H "x-automation-secret: $AUTOMATION_SECRET" https://SEU-APP.vercel.app/api/automation/tick
+curl -X POST -H "x-automation-secret: $AUTOMATION_SECRET" http://localhost:3000/api/automation/tick
 ```
 
 **Ver a fila e as falhas**
@@ -79,11 +79,11 @@ SELECT "startedAt", "finishedAt", created, sent, failed, skipped, rescheduled
 FROM "AutomationRun" ORDER BY "startedAt" DESC LIMIT 10;
 ```
 
-**Criar conta**: ver [deploy](../06-deploy-e-go-live/deploy.md#dados-iniciais). **Remover opt-out**: Admin, na tela do lead (*Remover bloqueio de envios*), e só se o próprio lead pediu para voltar. **Apagar dados de um lead** (pedido do titular): Admin, na tela do lead, *Anonimizar*.
+**Criar conta**: `npm run user:create -- <email> "<Nome>" <ADMIN|ATTENDANT>`, com a senha em `PULSO_NEW_PASSWORD`. **Remover opt-out**: Admin, na tela do lead (*Remover bloqueio de envios*), e só se o próprio lead pediu para voltar. **Apagar dados de um lead** (pedido do titular): Admin, na tela do lead, *Anonimizar*.
 
-**Trocar um segredo**: gerar valor novo, atualizar na Vercel, refazer o deploy e atualizar o n8n. `AUTH_SECRET` novo desconecta todo mundo.
+**Trocar um segredo**: gerar valor novo, atualizar no `.env`, reiniciar o app e atualizar o n8n. `AUTH_SECRET` novo desconecta todo mundo.
 
-**Atualizar o app**: push na branch principal; a Vercel faz o build e as migrations. Se falhar, a versão anterior continua no ar.
+**Atualizar o app**: `git pull`, `npm install`, `npx prisma migrate deploy` e reiniciar. Mudanças de banco devem ser aditivas (nova tabela ou coluna opcional), para a versão anterior continuar funcionando.
 
 ## O que não fazer
 

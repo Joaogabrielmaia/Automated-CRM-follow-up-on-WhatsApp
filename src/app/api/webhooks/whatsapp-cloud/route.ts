@@ -7,7 +7,7 @@ import { verifySignature } from "@/lib/rules/signature";
 export const dynamic = "force-dynamic";
 
 // Entrada nativa da WhatsApp Cloud API (ADR-007 revisto): a Meta chama esta rota direto, sem adaptador.
-// O app na Vercel já é público, então não precisa de n8n com endereço aberto para receber respostas.
+// Assim o n8n não precisa de endereço aberto para receber respostas: ele só dispara o ciclo.
 //
 // GET  = verificação do webhook (a Meta confere hub.verify_token e espera o hub.challenge de volta).
 // POST = eventos, assinados com HMAC-SHA256 do corpo bruto usando o segredo do app Meta (X-Hub-Signature-256).

@@ -8,4 +8,4 @@ Esta pasta é montada no n8n em `/automations` (somente leitura) e guarda os flu
 
 Não há fluxo para receber respostas: a Meta chama direto a rota `/api/webhooks/whatsapp-cloud` do app ([ADR-007](../docs/03-arquitetura/adr/ADR-007-validacao-do-webhook.md)).
 
-Passo a passo e variáveis: [docs/06-deploy-e-go-live/n8n.md](../docs/06-deploy-e-go-live/n8n.md).
+Passo a passo e variáveis: [docs/06-go-live/n8n.md](../docs/06-go-live/n8n.md).

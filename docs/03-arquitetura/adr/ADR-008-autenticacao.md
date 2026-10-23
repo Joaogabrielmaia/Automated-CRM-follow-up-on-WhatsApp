@@ -22,7 +22,7 @@ Opção 3. São cerca de 80 linhas em `src/lib/auth`: `hashPassword`/`verifyPass
 
 - Para e-mail e senha, o Auth.js me traria menos do que parece: eu usaria só o provedor de credenciais com sessão JWT, que é o mesmo que escrevo à mão.
 - Código curto e meu, fácil de revisar e testar.
-- `bcryptjs` é JavaScript puro e funciona sem compilar nada na Vercel.
+- `bcryptjs` é JavaScript puro e funciona em qualquer ambiente, sem compilar nada.
 
 ## Trade-off
 

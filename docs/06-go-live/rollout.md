@@ -2,7 +2,7 @@
 
 **Objetivo:** definir em que ordem o Pulso passa a ser usado de verdade, com critérios para avançar ou parar.
 **Data:** 23/10/2026 · **Status:** proposta, atualizada em 23/10/2026 depois que as lacunas técnicas da versão anterior foram fechadas no código. Decisões tomadas por mim com o que sei hoje; ajuste conforme o piloto real.
-**Relacionados:** [checklist](checklist.md) · [rollback](rollback.md) · [treinamento](treinamento.md) · [riscos](../02-definicao/06-riscos.md)
+**Relacionados:** [rollback](rollback.md) · [treinamento](treinamento.md) · [riscos](../02-definicao/06-riscos.md)
 
 ## A decisão principal
 
@@ -19,7 +19,7 @@ Por quê:
 
 ### Fase 0: preparação (1 a 2 dias)
 
-- Deploy e conferências do [checklist](checklist.md). Dados iniciais com `npm run db:seed:pilot` (etapas, modelos e regras, todas desligadas) e contas reais com `npm run user:create`. Nada de `db:seed`.
+- Dados iniciais com `npm run db:seed:pilot` (etapas, modelos e regras, todas desligadas) e contas reais com `npm run user:create`. Nada de `db:seed`.
 - Importar os leads atuais da planilha em *Funil → Importar CSV* (até 500 por arquivo). Eles entram com a automação **pausada**, para a regra de "lead novo" não tratar lead antigo como se tivesse acabado de chegar.
 - [Treinamento](treinamento.md) da Camila e do Marcos.
 - Todas as regras vêm desligadas do seed de piloto. As de nome **[Fase 1]** criam tarefas; as **[Fase 3]** enviam mensagens e não se mexe nelas ainda.
@@ -57,14 +57,14 @@ Nada vai para o ar nesta fase. O que era código já está feito; o que falta é
 - [x] Envio de modelo aprovado: campo "Nome do modelo aprovado na Meta" em *Modelos*; as variáveis viram parâmetros (RSK-08).
 - [x] Recebimento de respostas pela Meta direto no app (`/api/webhooks/whatsapp-cloud`), sem n8n público.
 - [x] Desativar regra cancela a fila (RN-19).
-- [x] CI com tipos, lint, testes e E2E (`.github/workflows/ci.yml`); falta só o repositório estar no GitHub.
+- [x] CI com tipos, lint, testes e E2E (`.github/workflows/ci.yml`); roda a cada push no GitHub.
 
 **Em aberto (dependem de conta, de você ou da Meta)**
 
 - [ ] Conta WhatsApp Business verificada e número dedicado (não o WhatsApp pessoal do Marcos).
 - [ ] Modelos de mensagem **submetidos e aprovados pela Meta** (a aprovação pode recusar o texto).
 - [ ] Provedor `whatsapp-cloud` e webhook testados na conta de teste da Meta, com o resultado anotado (hoje só foram testados com payloads montados por mim).
-- [ ] Webhook da Meta cadastrado e verificado (ver [deploy](deploy.md#api-oficial-do-whatsapp-fase-3)).
+- [ ] Webhook da Meta cadastrado e verificado (URL de retorno `/api/webhooks/whatsapp-cloud`, mesmo token de verificação do `.env`).
 - [ ] Revisão jurídica da base legal e do texto de aviso (a minha leitura da LGPD não é parecer).
 
 ### Fase 3: envio real, em pequeno (semanas seguintes)

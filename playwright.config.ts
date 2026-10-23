@@ -17,7 +17,7 @@ export default defineConfig({
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure", locale: "pt-BR", timezoneId: "America/Sao_Paulo" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    // Build de produção, o mesmo que vai para a Vercel: pega erro que o modo dev esconde e não tem compilação a frio.
+    // Build de produção: pega erro que o modo dev esconde e não tem compilação a frio.
     command: `npx tsx e2e/prepare-db.ts && npx next build && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}/api/health`,
     reuseExistingServer: false,

@@ -48,4 +48,4 @@
 - Madrugada e fim de semana afastam (RN-02).
 - A resposta do cliente precisa cortar a sequência na hora (RN-04).
 - Opt-out simples, por palavra (RN-03). Escolhi "SAIR". Como ela falou "para", também aceito "PARAR" e "STOP".
-- Texto sem tom de cobrança. Isso vira o guia de [boas práticas de mensagem](../06-deploy-e-go-live/boas-praticas-de-mensagem.md).
+- Texto sem tom de cobrança. Isso vira o guia de [boas práticas de mensagem](../06-go-live/boas-praticas-de-mensagem.md).
