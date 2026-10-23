@@ -16,7 +16,11 @@ import { run, text, type FormState } from "./helpers";
 export async function saveTemplateAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const actor = await requireUser();
   const result = await run(async () => {
-    await saveTemplate(actor, { id: text(formData, "id") || undefined, name: text(formData, "name"), body: text(formData, "body") });
+    await saveTemplate(actor, { id: text(formData, "id") || undefined, name: text(formData, "name"),
+      body: text(formData, "body"),
+      whatsappTemplateName: text(formData, "whatsappTemplateName"),
+      whatsappLanguage: text(formData, "whatsappLanguage"),
+    });
     return "Modelo salvo.";
   });
   revalidatePath("/modelos");
@@ -72,7 +76,7 @@ export async function deleteRuleAction(_prev: FormState, formData: FormData): Pr
   return result;
 }
 
-export async function runCycleAction(_prev: FormState, _formData?: FormData): Promise<FormState> {
+export async function runCycleAction(): Promise<FormState> {
   const actor = await requireUser();
   const result = await run(async () => {
     authorize(actor, "automation:run");

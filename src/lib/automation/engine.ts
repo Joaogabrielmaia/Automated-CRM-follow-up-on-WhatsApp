@@ -12,11 +12,13 @@ import { backoffMinutes, canRetry } from "@/lib/rules/backoff";
 import { nextSendableTime } from "@/lib/rules/business-hours";
 import { computeDue, idempotencyKey, type DueLead } from "@/lib/rules/due-rules";
 import { evaluateGuards } from "@/lib/rules/guards";
-import { renderTemplate } from "@/lib/rules/template";
+import { renderTemplate, templateParameters } from "@/lib/rules/template";
 
 const BATCH_SIZE = 100; // RNF-06
 const STUCK_AFTER_MINUTES = 10; // ADR-003
 const LEAD_SCAN_LIMIT = 2000;
+// Dois ciclos perdidos (o n8n roda a cada 5 minutos): a partir daí o atraso vira registro no log.
+const LATE_AFTER_MINUTES = 15;
 
 export interface CycleSummary {
   runId: string;
@@ -125,7 +127,7 @@ async function createDueJobs(ctx: Ctx): Promise<number> {
     take: LEAD_SCAN_LIMIT,
   });
 
-  const candidates: { key: string; leadId: string; ruleId: string; scheduledFor: Date }[] = [];
+  const candidates: { key: string; leadId: string; ruleId: string; scheduledFor: Date; dueAt: Date }[] = [];
   for (const rule of rules) {
     for (const lead of leads) {
       const due = computeDue(rule, toDueLead(lead));
@@ -134,6 +136,7 @@ async function createDueJobs(ctx: Ctx): Promise<number> {
         key: idempotencyKey(rule.id, lead.id, due.stamp),
         leadId: lead.id,
         ruleId: rule.id,
+        dueAt: due.dueAt,
         // Fora do horário a mensagem espera na fila (RN-02). Tarefa e mudança de etapa não esperam.
         scheduledFor: rule.action === "SEND_MESSAGE" ? nextSendableTime(ctx.now, ctx.settings.hours) : ctx.now,
       });
@@ -172,6 +175,16 @@ async function createDueJobs(ctx: Ctx): Promise<number> {
         leadId: c.leadId,
         runId: ctx.runId,
       });
+      const lateMinutes = Math.round((ctx.now.getTime() - c.dueAt.getTime()) / 60_000);
+      if (lateMinutes > LATE_AFTER_MINUTES) {
+        await writeLog(prisma, {
+          at: ctx.now,
+          event: "JOB_LATE",
+          detail: `Venceu há ${lateMinutes} min e só agora foi encontrado (o agendador ficou parado?)`,
+          leadId: c.leadId,
+          runId: ctx.runId,
+        });
+      }
     }
   }
   return created;
@@ -217,6 +230,18 @@ async function processJob(ctx: Ctx, job: JobWithRule): Promise<void> {
   if (claim.count === 0) return;
   const attempt = job.attempts + 1;
 
+  const lateMinutes = Math.round((ctx.now.getTime() - job.scheduledFor.getTime()) / 60_000);
+  if (attempt === 1 && lateMinutes > LATE_AFTER_MINUTES) {
+    await writeLog(prisma, {
+      at: ctx.now,
+      event: "JOB_LATE",
+      detail: `Executado ${lateMinutes} min depois do previsto (o agendador ficou parado?)`,
+      leadId: job.leadId,
+      jobId: job.id,
+      runId: ctx.runId,
+    });
+  }
+
   const lead = await prisma.lead.findUnique({ where: { id: job.leadId }, include: { stage: true } });
   if (!lead) {
     await finish(ctx, job, "CANCELED", "LEAD_UNAVAILABLE", "JOB_CANCELED");
@@ -239,6 +264,7 @@ async function processJob(ctx: Ctx, job: JobWithRule): Promise<void> {
   const decision = evaluateGuards({
     lead: { ...lead, stageKind: lead.stage.kind },
     action: job.rule.action,
+    ruleActive: job.rule.active,
     jobCreatedAt: job.createdAt,
     now: ctx.now,
     sentInCycle,
@@ -309,10 +335,27 @@ async function executeSend(ctx: Ctx, job: JobWithRule, lead: LeadWithStage, atte
     return;
   }
 
+  // Modelo aprovado na Meta: as variáveis viram parâmetros. Se não der para montá-los, não envio texto solto.
+  let approved: { name: string; language: string; parameters: string[] } | undefined;
+  if (template.whatsappTemplateName) {
+    const parameters = templateParameters(template.body, {
+      nome: lead.name,
+      servico: lead.interest,
+      valor: lead.estimatedValue?.toNumber() ?? null,
+    });
+    if (!parameters) {
+      await finish(ctx, job, "SKIPPED", "TEMPLATE_PARAMETERS", "JOB_SKIPPED", "Não consegui montar os parâmetros do modelo aprovado");
+      ctx.summary.skipped++;
+      return;
+    }
+    approved = { name: template.whatsappTemplateName, language: template.whatsappLanguage, parameters };
+  }
+
   try {
     const result = await ctx.provider.send({
       to: lead.phone,
       body: rendered.text,
+      template: approved,
       idempotencyKey: job.idempotencyKey,
       attempt,
     });

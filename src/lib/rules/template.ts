@@ -23,6 +23,19 @@ function valueOf(name: VarName, vars: TemplateVars): string | null {
   return vars.valor != null ? formatCurrency(vars.valor) : null;
 }
 
+// Valores das variáveis na ordem em que aparecem no texto: são os parâmetros {{1}}, {{2}}… do modelo aprovado
+// na Meta. A mesma variável repetida gera um parâmetro por ocorrência, como a Meta numera.
+export function templateParameters(body: string, vars: TemplateVars): string[] | null {
+  const values: string[] = [];
+  for (const name of extractVariables(body)) {
+    if (!(KNOWN as readonly string[]).includes(name)) return null;
+    const value = valueOf(name as VarName, vars);
+    if (value === null) return null;
+    values.push(value);
+  }
+  return values;
+}
+
 // RN-14: se faltar qualquer variável, não devolvo texto. Nunca sai "{valor}" cru para o cliente.
 export function renderTemplate(body: string, vars: TemplateVars): RenderResult {
   const missing: string[] = [];

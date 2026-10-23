@@ -2,10 +2,33 @@ import { ProviderError, type MessageProvider, type SendMessageInput, type SendMe
 
 const API_VERSION = "v21.0";
 
-// Adaptador para a WhatsApp Cloud API (ADR-002). Escrito conforme a documentação pública da Meta
-// e NÃO testado contra a API real: isso exige número dedicado e conta verificada.
-// Envia texto livre, que só é aceito dentro da janela de 24h de conversa. Fora dela a API pede
-// mensagem de modelo aprovado, o que ainda não implementei.
+// Adaptador para a WhatsApp Cloud API (ADR-002). Escrito conforme a documentação pública da Meta,
+// coberto por testes com a rede simulada, e NÃO testado contra a API real: isso exige número dedicado e
+// conta verificada. Com `template`, envia um modelo aprovado (único jeito de iniciar conversa ou falar
+// fora da janela de 24h). Sem ele, envia texto livre, aceito só dentro da janela.
+export function buildPayload(input: SendMessageInput) {
+  const to = input.to.replace(/\D/g, "");
+  if (input.template) {
+    return {
+      messaging_product: "whatsapp",
+      to,
+      type: "template",
+      template: {
+        name: input.template.name,
+        language: { code: input.template.language },
+        ...(input.template.parameters.length > 0
+          ? {
+              components: [
+                { type: "body", parameters: input.template.parameters.map((text) => ({ type: "text", text })) },
+              ],
+            }
+          : {}),
+      },
+    };
+  }
+  return { messaging_product: "whatsapp", to, type: "text", text: { body: input.body } };
+}
+
 export class WhatsAppCloudProvider implements MessageProvider {
   readonly name = "whatsapp-cloud";
 
@@ -20,12 +43,7 @@ export class WhatsAppCloudProvider implements MessageProvider {
       response = await fetch(`https://graph.facebook.com/${API_VERSION}/${this.phoneNumberId}/messages`, {
         method: "POST",
         headers: { Authorization: `Bearer ${this.accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messaging_product: "whatsapp",
-          to: input.to.replace(/\D/g, ""),
-          type: "text",
-          text: { body: input.body },
-        }),
+        body: JSON.stringify(buildPayload(input)),
         signal: AbortSignal.timeout(10_000),
       });
     } catch (error) {

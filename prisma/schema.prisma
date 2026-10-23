@@ -93,8 +93,8 @@ model Lead {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  stage        Stage          @relation(fields: [stageId], references: [id])
-  owner        User?          @relation(fields: [ownerId], references: [id])
+  stage        Stage           @relation(fields: [stageId], references: [id])
+  owner        User?           @relation(fields: [ownerId], references: [id])
   interactions Interaction[]
   tasks        Task[]
   history      StageHistory[]
@@ -141,7 +141,7 @@ model StageHistory {
   toStageId   String
   at          DateTime @default(now())
 
-  lead  Lead  @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead    Lead  @relation(fields: [leadId], references: [id], onDelete: Cascade)
   toStage Stage @relation(fields: [toStageId], references: [id])
 
   @@index([leadId])
@@ -149,11 +149,15 @@ model StageHistory {
 }
 
 model MessageTemplate {
-  id        String   @id @default(cuid())
-  name      String
-  body      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  name                 String
+  body                 String
+  // Nome do modelo aprovado na Meta (API oficial). Sem ele, o envio é texto livre, que a Meta só aceita
+  // dentro de 24h depois da última mensagem do cliente. Com ele, as variáveis do texto viram os parâmetros.
+  whatsappTemplateName String?
+  whatsappLanguage     String   @default("pt_BR")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   rules AutomationRule[]
 }
@@ -176,22 +180,22 @@ model AutomationRule {
 }
 
 model AutomationJob {
-  id               String     @id @default(cuid())
-  idempotencyKey   String     @unique
-  leadId           String
-  ruleId           String
-  status           JobStatus  @default(PENDING)
-  scheduledFor     DateTime
-  attempts         Int        @default(0)
-  reason           String?
-  lastError        String?
+  id                String    @id @default(cuid())
+  idempotencyKey    String    @unique
+  leadId            String
+  ruleId            String
+  status            JobStatus @default(PENDING)
+  scheduledFor      DateTime
+  attempts          Int       @default(0)
+  reason            String?
+  lastError         String?
   providerMessageId String?
-  sentAt           DateTime?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  sentAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  lead Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  rule AutomationRule @relation(fields: [ruleId], references: [id])
+  lead Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  rule AutomationRule  @relation(fields: [ruleId], references: [id])
   logs AutomationLog[]
 
   @@index([status, scheduledFor])
@@ -212,13 +216,13 @@ model AutomationRun {
 }
 
 model AutomationLog {
-  id      String   @id @default(cuid())
-  at      DateTime
-  event   String
-  detail  String?
-  leadId  String?
-  jobId   String?
-  runId   String?
+  id     String   @id @default(cuid())
+  at     DateTime
+  event  String
+  detail String?
+  leadId String?
+  jobId  String?
+  runId  String?
 
   job AutomationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
   run AutomationRun? @relation(fields: [runId], references: [id], onDelete: SetNull)

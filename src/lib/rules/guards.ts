@@ -13,6 +13,8 @@ export interface GuardLead {
 export interface GuardInput {
   lead: GuardLead;
   action: RuleAction;
+  // Regra desativada depois de o job ser criado: o job não pode sair (a fila para junto com a regra).
+  ruleActive: boolean;
   jobCreatedAt: Date;
   now: Date;
   sentInCycle: number;
@@ -33,6 +35,7 @@ export type GuardDecision =
 export function evaluateGuards(input: GuardInput): GuardDecision {
   const { lead, action, now } = input;
 
+  if (!input.ruleActive) return { decision: "cancel", reason: "RULE_INACTIVE" };
   if (lead.anonymizedAt || lead.archivedAt) return { decision: "cancel", reason: "LEAD_UNAVAILABLE" };
   if (lead.optedOutAt) return { decision: "cancel", reason: "OPT_OUT" };
   if (lead.stageKind === "WON" || lead.stageKind === "LOST") return { decision: "cancel", reason: "STAGE_CLOSED" };

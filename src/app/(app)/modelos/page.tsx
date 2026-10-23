@@ -9,6 +9,9 @@ import { listTemplates } from "@/lib/services/templates";
 export const metadata: Metadata = { title: "Modelos" };
 export const dynamic = "force-dynamic";
 
+const WA_HINT =
+  "Só para a API oficial do WhatsApp. As variáveis do texto, na ordem em que aparecem, viram {{1}}, {{2}}… do modelo aprovado. Deixe vazio com o envio simulado.";
+
 const SAMPLE = { nome: "Renata Marques", servico: "reforma do banheiro", valor: 12400 };
 
 export default async function TemplatesPage() {
@@ -37,6 +40,10 @@ export default async function TemplatesPage() {
                 <Field label="Texto" name={`body-${t.id}`}>
                   <textarea id={`body-${t.id}`} name="body" defaultValue={t.body} required rows={3} className="input" />
                 </Field>
+                <Field label="Nome do modelo aprovado na Meta (opcional)" name={`wa-${t.id}`} hint={WA_HINT}>
+                  <input id={`wa-${t.id}`} name="whatsappTemplateName" defaultValue={t.whatsappTemplateName ?? ""} className="input" placeholder="boas_vindas_v1" />
+                </Field>
+                <input type="hidden" name="whatsappLanguage" value={t.whatsappLanguage} />
               </ActionForm>
               <div className="mt-3 rounded-md bg-slate-50 p-3 text-sm">
                 <p className="text-xs font-medium text-slate-500">Pré-visualização com a Renata (exemplo)</p>
@@ -64,7 +71,10 @@ export default async function TemplatesPage() {
               <input id="new-name" name="name" required className="input" />
             </Field>
             <Field label="Texto" name="new-body">
-              <textarea id="new-body" name="body" required rows={3} className="input" placeholder="Oi, {nome}! Aqui é a Camila, da Casa Nova…" />
+              <textarea id="new-body" name="body" required rows={3} className="input" placeholder="Oi, {nome}! Aqui é da Casa Nova Reformas…" />
+            </Field>
+            <Field label="Nome do modelo aprovado na Meta (opcional)" name="new-wa" hint={WA_HINT}>
+              <input id="new-wa" name="whatsappTemplateName" className="input" placeholder="boas_vindas_v1" />
             </Field>
           </ActionForm>
         </section>

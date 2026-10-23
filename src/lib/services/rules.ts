@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { authorize, type SessionUser } from "@/lib/auth/permissions";
+import { writeLog } from "@/lib/domain/shared";
 import { conflict, invalid } from "@/lib/errors";
 
 const emptyToUndefined = (v: unknown) => (v === "" || v === null ? undefined : v);
@@ -45,11 +46,26 @@ export async function saveRule(actor: SessionUser, raw: RuleInput & { id?: strin
 }
 
 // RN-17: ao ativar, guardo o instante. A regra só vale para o que começar depois dele.
+// Ao desativar, o que a regra já tinha na fila também é cancelado: desligar tem que parar de verdade.
 export async function setRuleActive(actor: SessionUser, id: string, active: boolean, now: Date = new Date()) {
   authorize(actor, "rules:write");
-  return prisma.automationRule.update({
-    where: { id },
-    data: active ? { active: true, activatedAt: now } : { active: false },
+  if (active) {
+    return prisma.automationRule.update({ where: { id }, data: { active: true, activatedAt: now } });
+  }
+  return prisma.$transaction(async (tx) => {
+    const rule = await tx.automationRule.update({ where: { id }, data: { active: false } });
+    const canceled = await tx.automationJob.updateMany({
+      where: { ruleId: id, status: "PENDING" },
+      data: { status: "CANCELED", reason: "RULE_INACTIVE" },
+    });
+    if (canceled.count > 0) {
+      await writeLog(tx, {
+        at: now,
+        event: "JOBS_CANCELED",
+        detail: `${canceled.count} pendente(s) cancelado(s): regra "${rule.name}" desativada`,
+      });
+    }
+    return rule;
   });
 }
 

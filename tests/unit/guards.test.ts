@@ -17,6 +17,7 @@ const input = (patch: Partial<GuardInput> = {}, lead: Partial<GuardInput["lead"]
     ...lead,
   },
   action: "SEND_MESSAGE",
+  ruleActive: true,
   jobCreatedAt: created,
   now,
   sentInCycle: 0,
@@ -30,6 +31,10 @@ const input = (patch: Partial<GuardInput> = {}, lead: Partial<GuardInput["lead"]
 describe("travas antes de enviar (RN-03, RN-04, RN-06, RN-09, RN-10)", () => {
   it("libera um envio normal", () => {
     expect(evaluateGuards(input())).toEqual({ decision: "proceed" });
+  });
+
+  it("cancela quando a regra foi desativada depois de o job ser criado", () => {
+    expect(evaluateGuards(input({ ruleActive: false }))).toEqual({ decision: "cancel", reason: "RULE_INACTIVE" });
   });
 
   it("cancela por opt-out", () => {

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runAutomationCycle } from "@/lib/automation/engine";
+import { setRuleActive } from "@/lib/services/rules";
 import { SimulatedProvider } from "@/lib/providers/simulated";
 import type { MessageProvider } from "@/lib/providers";
 import { addMinutes, at, baseWorld, jobsOf, makeLead, makeRule, MON_10H, nextPhone, prisma, resetDb } from "./helpers";
@@ -261,5 +262,89 @@ describe("orçamento sem retorno (RN-15)", () => {
     const message = await prisma.interaction.findFirstOrThrow({ where: { leadId: lead.id, type: "MESSAGE_OUT" } });
     expect(message.body).toContain("R$");
     expect(message.body).not.toContain("{");
+  });
+});
+
+describe("regra desativada (HU-07)", () => {
+  it("desativar pela tela cancela na hora o que a regra tinha na fila", async () => {
+    const rule = await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
+    const lead = await makeLead({ stageId: stageId(), createdAt: at("2026-10-19T23:00:00Z") }); // fora do horário
+    await runAutomationCycle(at("2026-10-19T23:10:00Z"));
+    expect((await jobsOf(lead.id))[0].status).toBe("PENDING");
+
+    const admin = { id: world.user.id, name: "Admin", email: "a@teste.dev", role: "ADMIN" as const };
+    await setRuleActive(admin, rule.id, false, at("2026-10-19T23:20:00Z"));
+
+    expect((await jobsOf(lead.id))[0]).toMatchObject({ status: "CANCELED", reason: "RULE_INACTIVE" });
+    const summary = await runAutomationCycle(at("2026-10-20T11:00:00Z"));
+    expect(summary.sent).toBe(0);
+  });
+
+  it("job pendente de regra desligada por fora (ex.: direto no banco) também não sai", async () => {
+    const rule = await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
+    const lead = await makeLead({ stageId: stageId(), createdAt: MON_10H });
+    await prisma.automationJob.create({
+      data: { idempotencyKey: `${rule.id}:${lead.id}:x`, leadId: lead.id, ruleId: rule.id, scheduledFor: MON_10H },
+    });
+    await prisma.automationRule.update({ where: { id: rule.id }, data: { active: false } });
+
+    const summary = await runAutomationCycle(addMinutes(MON_10H, 10));
+    expect(summary).toMatchObject({ sent: 0, canceled: 1 });
+    expect((await jobsOf(lead.id))[0].reason).toBe("RULE_INACTIVE");
+  });
+});
+
+describe("agendador parado (modos de falha)", () => {
+  it("job que roda muito depois do previsto deixa o registro Atrasado no log", async () => {
+    await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
+    const lead = await makeLead({ stageId: stageId(), createdAt: MON_10H });
+
+    // O n8n ficou parado: o ciclo só volta 1h30 depois do previsto, ainda dentro do horário comercial.
+    const summary = await runAutomationCycle(addMinutes(MON_10H, 95));
+    expect(summary.sent).toBe(1);
+    const late = await prisma.automationLog.findMany({ where: { leadId: lead.id, event: "JOB_LATE" } });
+    expect(late).toHaveLength(1);
+    expect(late[0].detail).toMatch(/Venceu há 90 min/);
+  });
+
+  it("job no horário não gera registro de atraso", async () => {
+    await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
+    const lead = await makeLead({ stageId: stageId(), createdAt: MON_10H });
+    await runAutomationCycle(addMinutes(MON_10H, 6));
+    expect(await prisma.automationLog.count({ where: { leadId: lead.id, event: "JOB_LATE" } })).toBe(0);
+  });
+});
+
+describe("modelo aprovado na Meta (RSK-08)", () => {
+  const capture = () => {
+    const sent: Parameters<MessageProvider["send"]>[0][] = [];
+    const provider: MessageProvider = {
+      name: "captura",
+      send: async (input) => {
+        sent.push(input);
+        return { providerMessageId: "x" };
+      },
+    };
+    return { sent, provider };
+  };
+
+  it("com nome do modelo aprovado, as variáveis viram parâmetros na ordem do texto", async () => {
+    const rule = await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5, body: "Oi {nome}, sobre {servico}" });
+    await prisma.messageTemplate.update({ where: { id: rule.templateId! }, data: { whatsappTemplateName: "boas_vindas_v1" } });
+    await makeLead({ stageId: stageId(), createdAt: MON_10H, name: "Ana Paula", interest: "Reforma de banheiro" });
+    const { sent, provider } = capture();
+
+    const summary = await runAutomationCycle(addMinutes(MON_10H, 6), { provider });
+    expect(summary.sent).toBe(1);
+    expect(sent[0].template).toEqual({ name: "boas_vindas_v1", language: "pt_BR", parameters: ["Ana", "Reforma de banheiro"] });
+    expect(sent[0].body).toBe("Oi Ana, sobre Reforma de banheiro");
+  });
+
+  it("sem nome do modelo aprovado, segue texto livre", async () => {
+    await makeRule({ name: "Boas-vindas", trigger: "NEW_LEAD", afterMinutes: 5 });
+    await makeLead({ stageId: stageId(), createdAt: MON_10H });
+    const { sent, provider } = capture();
+    await runAutomationCycle(addMinutes(MON_10H, 6), { provider });
+    expect(sent[0].template).toBeUndefined();
   });
 });
