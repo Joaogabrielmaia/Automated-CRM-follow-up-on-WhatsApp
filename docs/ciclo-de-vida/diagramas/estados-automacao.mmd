@@ -1,0 +1,6 @@
+stateDiagram-v2
+    [*] --> Ativa
+    Ativa --> Pausada: pausar (RN-10)
+    Pausada --> Ativa: retomar
+    Ativa --> OptOut: SAIR, PARAR ou STOP (RN-03)
+    OptOut --> Ativa: Admin remove o opt-out

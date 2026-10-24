@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Aberta: cadastro ou importação CSV
+    Aberta --> Orcamento: mover
+    Orcamento --> Aberta: mover
+    Aberta --> Ganha: mover
+    Orcamento --> Ganha: mover
+    Aberta --> Perdida: mover com motivo, ou regra Perdido sem resposta
+    Orcamento --> Perdida: mover com motivo, ou regra Perdido sem resposta
+    Perdida --> Aberta: reabrir limpa o motivo
+    Ganha --> Aberta: reabrir

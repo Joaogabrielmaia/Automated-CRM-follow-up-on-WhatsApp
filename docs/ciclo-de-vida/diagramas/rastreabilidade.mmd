@@ -1,0 +1,8 @@
+flowchart LR
+    N["Necessidade<br/>(reunião, P1 a P6)"] --> R["Requisito<br/>RF e RNF"]
+    R --> H["História<br/>HU-01 a HU-16"]
+    R --> G["Regra<br/>RN-01 a RN-19"]
+    G --> D["Decisão<br/>ADR-001 a ADR-010"]
+    G --> C["Código<br/>src/lib/rules e automation"]
+    C --> T["Teste<br/>unidade, integração, E2E"]
+    T --> E["Evidência<br/>logs e CI"]

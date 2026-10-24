@@ -1,0 +1,17 @@
+flowchart LR
+    subgraph EXISTE["Existe (execução local)"]
+        DK["Docker Compose<br/>PostgreSQL 16"]
+        APP["App Next.js<br/>build de produção"]
+        N8L["n8n em Docker<br/>perfil opcional"]
+    end
+    subgraph PLANEJADO["Planejado"]
+        HOST["Hospedagem do app<br/>(não definida)"]
+        META["WhatsApp Cloud API<br/>número dedicado e modelos aprovados"]
+        MON["Monitor externo<br/>/api/health?strict=1"]
+    end
+    N8L -->|"POST tick"| APP
+    APP --> DK
+    APP -.-> META
+    MON -.-> HOST
+    classDef plan stroke-dasharray: 5 5;
+    class HOST,META,MON plan;

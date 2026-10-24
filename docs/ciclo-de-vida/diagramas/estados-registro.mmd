@@ -1,0 +1,5 @@
+stateDiagram-v2
+    [*] --> Ativo
+    Ativo --> Arquivado: arquivar
+    Arquivado --> Anonimizado: anonimizar (RNF-04)
+    Ativo --> Anonimizado: anonimizar (RNF-04)

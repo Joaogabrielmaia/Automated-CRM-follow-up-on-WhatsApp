@@ -1,0 +1,7 @@
+flowchart TB
+    AT(["Atendente"]) -->|"funil, tarefas, modelos"| P["Pulso<br/>mini CRM com follow-up"]
+    AD(["Dono (Admin)"]) -->|"regras, limites, log, painel"| P
+    N8["n8n<br/>agendador"] -->|"POST tick a cada 5 min"| P
+    P -->|"envia mensagem"| WA["WhatsApp Cloud API<br/>(adaptador não validado)"]
+    WA -->|"webhook com a resposta"| P
+    LD(["Lead"]) <-->|"conversa"| WA
