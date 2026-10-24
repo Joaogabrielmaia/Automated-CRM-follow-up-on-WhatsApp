@@ -124,7 +124,7 @@ Execução de 24/10/2026 no commit `cbbcc47`, com data, versão do Node e comand
 | Integração (89) | engine 21, leads 15, webhook-meta 14, authorization 9, webhook 8, import 7, seed-pilot 7, health 5, dashboard 3 |
 | E2E (16) | funil 5, login-e-papeis 5, regras 2, importação 2, simulador 2 |
 
-A CI existe em [`.github/workflows/ci.yml`](.github/workflows/ci.yml) e ainda não rodou no GitHub.
+A CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) roda tipos, lint, testes e E2E a cada push na `main`. O último run antes desta branch, no commit `cbbcc47`, terminou com sucesso ([run](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/39980673278)).
 
 ## Rodar localmente
 
@@ -155,7 +155,6 @@ O n8n é opcional e sobe com `docker compose --profile n8n up -d n8n`: [passo a 
 
 - Integração com a Meta não validada: [limites](docs/05-qualidade/README.md).
 - Agendamento do n8n por horas não testado: [n8n](docs/06-go-live/n8n.md).
-- CI não executada: [qualidade](docs/05-qualidade/README.md).
 - Rollback, runbook e treinamento não ensaiados: [rollback](docs/06-go-live/rollback.md) · [runbook](docs/07-pos-go-live/runbook.md) · [treinamento](docs/06-go-live/treinamento.md).
 - Sem hospedagem: [qualidade](docs/05-qualidade/README.md).
 - Acessibilidade e carga não testadas; RNF-05 sem teste automático: [qualidade](docs/05-qualidade/README.md).

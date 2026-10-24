@@ -8,180 +8,180 @@ comando: npm test
 > vitest run
 
 
-[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Joaog/Downloads/Mini CRM com funil e follow-up automático no WhatsApp[39m
+ RUN  v3.2.7 C:/Users/Joaog/Downloads/Mini CRM com funil e follow-up automático no WhatsApp
 
 ◇ injected env (8) from .env
-[90mstderr[2m | tests/integration/engine.test.ts
-[22m[39m◇ injected env (0) from .env
+stderr | tests/integration/engine.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/engine.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 11242[2mms[22m[39m
-   [33m[2m✓[22m[39m boas-vindas (RN-12) e idempotência (RN-05)[2m > [22menvia uma vez e não duplica ao rodar o ciclo de novo [33m 608[2mms[22m[39m
-   [33m[2m✓[22m[39m boas-vindas (RN-12) e idempotência (RN-05)[2m > [22mdois ciclos simultâneos enviam a mensagem uma única vez (ADR-003) [33m 456[2mms[22m[39m
-   [33m[2m✓[22m[39m regra nova não age sobre o passado (RN-17)[2m > [22mlead criado antes da ativação da regra não gera mensagem [33m 348[2mms[22m[39m
-   [33m[2m✓[22m[39m horário comercial (RN-01, RN-02)[2m > [22mlead criado à noite espera a abertura da janela e sai de manhã [33m 527[2mms[22m[39m
-   [33m[2m✓[22m[39m sequência sem resposta (RN-06, RN-07, RN-08)[2m > [22mboas-vindas, follow-up 1 (24h), follow-up 2 (72h) e Perdido (120h) [33m 1241[2mms[22m[39m
-   [33m[2m✓[22m[39m sequência sem resposta (RN-06, RN-07, RN-08)[2m > [22mlimite de mensagens por ciclo pula a excedente e registra o motivo (RN-06) [33m 768[2mms[22m[39m
-   [33m[2m✓[22m[39m intervalo mínimo entre mensagens (RN-18)[2m > [22msegunda mensagem vencida logo após a primeira é adiada em pelo menos 12h [33m 573[2mms[22m[39m
-   [33m[2m✓[22m[39m falhas do provedor (RN-11)[2m > [22mfalha só na primeira tentativa: reagenda em 1 min e envia na segunda [33m 417[2mms[22m[39m
-   [33m[2m✓[22m[39m falhas do provedor (RN-11)[2m > [22mfalha sempre: 4 tentativas, depois FAILED e tarefa para a atendente [33m 497[2mms[22m[39m
-   [33m[2m✓[22m[39m falhas do provedor (RN-11)[2m > [22merro definitivo não tenta de novo [33m 367[2mms[22m[39m
-   [33m[2m✓[22m[39m falhas do provedor (RN-11)[2m > [22mjob travado em SENDING vira FAILED sem reenviar e avisa a atendente (ADR-003) [33m 411[2mms[22m[39m
-   [33m[2m✓[22m[39m travas de estado (RN-09, RN-10, RN-14)[2m > [22mlead movido para Perdido depois do job criado tem o envio cancelado [33m 451[2mms[22m[39m
-   [33m[2m✓[22m[39m travas de estado (RN-09, RN-10, RN-14)[2m > [22mlead pausado não recebe nada [33m 521[2mms[22m[39m
-   [33m[2m✓[22m[39m travas de estado (RN-09, RN-10, RN-14)[2m > [22mmodelo com {valor} e lead sem valor fica pulado, sem texto com chaves soltas [33m 368[2mms[22m[39m
-   [33m[2m✓[22m[39m orçamento sem retorno (RN-15)[2m > [22mapós 48h na etapa de orçamento cria a tarefa e envia a mensagem [33m 548[2mms[22m[39m
-   [33m[2m✓[22m[39m regra desativada (HU-07)[2m > [22mdesativar pela tela cancela na hora o que a regra tinha na fila [33m 410[2mms[22m[39m
-   [33m[2m✓[22m[39m regra desativada (HU-07)[2m > [22mjob pendente de regra desligada por fora (ex.: direto no banco) também não sai [33m 711[2mms[22m[39m
-   [33m[2m✓[22m[39m agendador parado (modos de falha)[2m > [22mjob que roda muito depois do previsto deixa o registro Atrasado no log [33m 421[2mms[22m[39m
-   [33m[2m✓[22m[39m agendador parado (modos de falha)[2m > [22mjob no horário não gera registro de atraso [33m 475[2mms[22m[39m
-   [33m[2m✓[22m[39m modelo aprovado na Meta (RSK-08)[2m > [22mcom nome do modelo aprovado, as variáveis viram parâmetros na ordem do texto [33m 595[2mms[22m[39m
-   [33m[2m✓[22m[39m modelo aprovado na Meta (RSK-08)[2m > [22msem nome do modelo aprovado, segue texto livre [33m 517[2mms[22m[39m
-[90mstderr[2m | tests/integration/leads.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/engine.test.ts (21 tests) 11242ms
+   ✓ boas-vindas (RN-12) e idempotência (RN-05) > envia uma vez e não duplica ao rodar o ciclo de novo  608ms
+   ✓ boas-vindas (RN-12) e idempotência (RN-05) > dois ciclos simultâneos enviam a mensagem uma única vez (ADR-003)  456ms
+   ✓ regra nova não age sobre o passado (RN-17) > lead criado antes da ativação da regra não gera mensagem  348ms
+   ✓ horário comercial (RN-01, RN-02) > lead criado à noite espera a abertura da janela e sai de manhã  527ms
+   ✓ sequência sem resposta (RN-06, RN-07, RN-08) > boas-vindas, follow-up 1 (24h), follow-up 2 (72h) e Perdido (120h)  1241ms
+   ✓ sequência sem resposta (RN-06, RN-07, RN-08) > limite de mensagens por ciclo pula a excedente e registra o motivo (RN-06)  768ms
+   ✓ intervalo mínimo entre mensagens (RN-18) > segunda mensagem vencida logo após a primeira é adiada em pelo menos 12h  573ms
+   ✓ falhas do provedor (RN-11) > falha só na primeira tentativa: reagenda em 1 min e envia na segunda  417ms
+   ✓ falhas do provedor (RN-11) > falha sempre: 4 tentativas, depois FAILED e tarefa para a atendente  497ms
+   ✓ falhas do provedor (RN-11) > erro definitivo não tenta de novo  367ms
+   ✓ falhas do provedor (RN-11) > job travado em SENDING vira FAILED sem reenviar e avisa a atendente (ADR-003)  411ms
+   ✓ travas de estado (RN-09, RN-10, RN-14) > lead movido para Perdido depois do job criado tem o envio cancelado  451ms
+   ✓ travas de estado (RN-09, RN-10, RN-14) > lead pausado não recebe nada  521ms
+   ✓ travas de estado (RN-09, RN-10, RN-14) > modelo com {valor} e lead sem valor fica pulado, sem texto com chaves soltas  368ms
+   ✓ orçamento sem retorno (RN-15) > após 48h na etapa de orçamento cria a tarefa e envia a mensagem  548ms
+   ✓ regra desativada (HU-07) > desativar pela tela cancela na hora o que a regra tinha na fila  410ms
+   ✓ regra desativada (HU-07) > job pendente de regra desligada por fora (ex.: direto no banco) também não sai  711ms
+   ✓ agendador parado (modos de falha) > job que roda muito depois do previsto deixa o registro Atrasado no log  421ms
+   ✓ agendador parado (modos de falha) > job no horário não gera registro de atraso  475ms
+   ✓ modelo aprovado na Meta (RSK-08) > com nome do modelo aprovado, as variáveis viram parâmetros na ordem do texto  595ms
+   ✓ modelo aprovado na Meta (RSK-08) > sem nome do modelo aprovado, segue texto livre  517ms
+stderr | tests/integration/leads.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/leads.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 10788[2mms[22m[39m
-   [33m[2m✓[22m[39m cadastro de lead (RF-02, RN-13)[2m > [22mnormaliza o telefone, entra na primeira etapa aberta e registra histórico [33m 386[2mms[22m[39m
-   [33m[2m✓[22m[39m cadastro de lead (RF-02, RN-13)[2m > [22mrecusa telefone inválido e telefone repetido, mesmo escrito de outro jeito [33m 581[2mms[22m[39m
-   [33m[2m✓[22m[39m cadastro de lead (RF-02, RN-13)[2m > [22mvalida nome, origem e valor [33m 405[2mms[22m[39m
-   [33m[2m✓[22m[39m cadastro de lead (RF-02, RN-13)[2m > [22meditar para o telefone de outro lead dá conflito [33m 352[2mms[22m[39m
-   [33m[2m✓[22m[39m movimentação no funil (RF-04, RF-18, RN-09)[2m > [22mmover para Perdido exige motivo e cancela o que estava na fila [33m 667[2mms[22m[39m
-   [33m[2m✓[22m[39m movimentação no funil (RF-04, RF-18, RN-09)[2m > [22msair de Perdido limpa o motivo; entrar em orçamento marca o instante (RN-15) [33m 487[2mms[22m[39m
-   [33m[2m✓[22m[39m movimentação no funil (RF-04, RF-18, RN-09)[2m > [22mbusca no quadro por nome ou telefone [33m 330[2mms[22m[39m
-   [33m[2m✓[22m[39m pausa e contato manual (RF-06, RF-12, RN-10)[2m > [22mpausar cancela a fila e registra na linha do tempo [33m 1263[2mms[22m[39m
-   [33m[2m✓[22m[39m pausa e contato manual (RF-06, RF-12, RN-10)[2m > [22mcontato manual inicia o ciclo de sem resposta, que alimenta os follow-ups [33m 900[2mms[22m[39m
-   [33m[2m✓[22m[39m etapas do funil (RF-03, ADR-006)[2m > [22mcria, renomeia e reordena etapas [33m 1227[2mms[22m[39m
-   [33m[2m✓[22m[39m etapas do funil (RF-03, ADR-006)[2m > [22mnão deixa o funil sem etapa ganha, perdida ou aberta [33m 1037[2mms[22m[39m
-   [33m[2m✓[22m[39m etapas do funil (RF-03, ADR-006)[2m > [22mnão remove etapa que ainda tem leads [33m 905[2mms[22m[39m
-   [33m[2m✓[22m[39m modelos e regras (RF-07, RF-08, RN-14, RN-16)[2m > [22mrecusa variável desconhecida no modelo [33m 842[2mms[22m[39m
-   [33m[2m✓[22m[39m modelos e regras (RF-07, RF-08, RN-14, RN-16)[2m > [22mnão apaga modelo em uso por regra nem regra que já executou [33m 987[2mms[22m[39m
-   [33m[2m✓[22m[39m modelos e regras (RF-07, RF-08, RN-14, RN-16)[2m > [22mcada ação exige o seu campo (modelo, título da tarefa ou motivo) [33m 415[2mms[22m[39m
-[90mstderr[2m | tests/integration/webhook-meta.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/leads.test.ts (15 tests) 10788ms
+   ✓ cadastro de lead (RF-02, RN-13) > normaliza o telefone, entra na primeira etapa aberta e registra histórico  386ms
+   ✓ cadastro de lead (RF-02, RN-13) > recusa telefone inválido e telefone repetido, mesmo escrito de outro jeito  581ms
+   ✓ cadastro de lead (RF-02, RN-13) > valida nome, origem e valor  405ms
+   ✓ cadastro de lead (RF-02, RN-13) > editar para o telefone de outro lead dá conflito  352ms
+   ✓ movimentação no funil (RF-04, RF-18, RN-09) > mover para Perdido exige motivo e cancela o que estava na fila  667ms
+   ✓ movimentação no funil (RF-04, RF-18, RN-09) > sair de Perdido limpa o motivo; entrar em orçamento marca o instante (RN-15)  487ms
+   ✓ movimentação no funil (RF-04, RF-18, RN-09) > busca no quadro por nome ou telefone  330ms
+   ✓ pausa e contato manual (RF-06, RF-12, RN-10) > pausar cancela a fila e registra na linha do tempo  1263ms
+   ✓ pausa e contato manual (RF-06, RF-12, RN-10) > contato manual inicia o ciclo de sem resposta, que alimenta os follow-ups  900ms
+   ✓ etapas do funil (RF-03, ADR-006) > cria, renomeia e reordena etapas  1227ms
+   ✓ etapas do funil (RF-03, ADR-006) > não deixa o funil sem etapa ganha, perdida ou aberta  1037ms
+   ✓ etapas do funil (RF-03, ADR-006) > não remove etapa que ainda tem leads  905ms
+   ✓ modelos e regras (RF-07, RF-08, RN-14, RN-16) > recusa variável desconhecida no modelo  842ms
+   ✓ modelos e regras (RF-07, RF-08, RN-14, RN-16) > não apaga modelo em uso por regra nem regra que já executou  987ms
+   ✓ modelos e regras (RF-07, RF-08, RN-14, RN-16) > cada ação exige o seu campo (modelo, título da tarefa ou motivo)  415ms
+stderr | tests/integration/webhook-meta.test.ts
+◇ injected env (0) from .env
 
-[90mstderr[2m | tests/integration/webhook-meta.test.ts[2m > [22m[2massinatura dos eventos (POST)[2m > [22m[2msem WHATSAPP_APP_SECRET configurado responde 500, nunca aceita sem conferir
-[22m[39m[webhook-meta] WHATSAPP_APP_SECRET não configurado
+stderr | tests/integration/webhook-meta.test.ts > assinatura dos eventos (POST) > sem WHATSAPP_APP_SECRET configurado responde 500, nunca aceita sem conferir
+[webhook-meta] WHATSAPP_APP_SECRET não configurado
 
- [32m✓[39m tests/integration/webhook-meta.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 10386[2mms[22m[39m
-   [33m[2m✓[22m[39m verificação do webhook (GET)[2m > [22mdevolve o desafio da Meta quando o token confere [33m 644[2mms[22m[39m
-   [33m[2m✓[22m[39m verificação do webhook (GET)[2m > [22mrecusa token errado, modo errado e token ausente [33m 455[2mms[22m[39m
-   [33m[2m✓[22m[39m verificação do webhook (GET)[2m > [22msem WHATSAPP_VERIFY_TOKEN configurado recusa tudo [33m 577[2mms[22m[39m
-   [33m[2m✓[22m[39m assinatura dos eventos (POST)[2m > [22msem assinatura, com assinatura errada ou sobre outro corpo: 401 e nada é gravado [33m 307[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mtexto de um lead interrompe a sequência e cria a tarefa Responder (RN-04) [33m 469[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mSAIR pela Meta bloqueia o lead (RN-03) [33m 436[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mo mesmo evento reenviado pela Meta não duplica nada [33m 432[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mcelular antigo entregue sem o 9 casa com o lead cadastrado com o 9 [33m 2373[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22máudio ou imagem também contam como resposta, mas nunca como SAIR [33m 842[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mresposta de botão usa o título do botão como texto [33m 865[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mvárias mensagens no mesmo evento são todas processadas [33m 1313[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mevento de status (entregue, lida) e remetente desconhecido respondem 200 sem alterar nada [33m 611[2mms[22m[39m
-   [33m[2m✓[22m[39m mensagens recebidas[2m > [22mJSON quebrado ou fora do formato: 400 [33m 755[2mms[22m[39m
-[90mstderr[2m | tests/integration/authorization.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/webhook-meta.test.ts (14 tests) 10386ms
+   ✓ verificação do webhook (GET) > devolve o desafio da Meta quando o token confere  644ms
+   ✓ verificação do webhook (GET) > recusa token errado, modo errado e token ausente  455ms
+   ✓ verificação do webhook (GET) > sem WHATSAPP_VERIFY_TOKEN configurado recusa tudo  577ms
+   ✓ assinatura dos eventos (POST) > sem assinatura, com assinatura errada ou sobre outro corpo: 401 e nada é gravado  307ms
+   ✓ mensagens recebidas > texto de um lead interrompe a sequência e cria a tarefa Responder (RN-04)  469ms
+   ✓ mensagens recebidas > SAIR pela Meta bloqueia o lead (RN-03)  436ms
+   ✓ mensagens recebidas > o mesmo evento reenviado pela Meta não duplica nada  432ms
+   ✓ mensagens recebidas > celular antigo entregue sem o 9 casa com o lead cadastrado com o 9  2373ms
+   ✓ mensagens recebidas > áudio ou imagem também contam como resposta, mas nunca como SAIR  842ms
+   ✓ mensagens recebidas > resposta de botão usa o título do botão como texto  865ms
+   ✓ mensagens recebidas > várias mensagens no mesmo evento são todas processadas  1313ms
+   ✓ mensagens recebidas > evento de status (entregue, lida) e remetente desconhecido respondem 200 sem alterar nada  611ms
+   ✓ mensagens recebidas > JSON quebrado ou fora do formato: 400  755ms
+stderr | tests/integration/authorization.test.ts
+◇ injected env (0) from .env
 
-[90mstdout[2m | tests/integration/authorization.test.ts[2m > [22m[2mrota do ciclo de automação[2m > [22m[2mcom o segredo certo executa um ciclo
-[22m[39m[tick] {"runId":"cmvluy6vb001yupcwhnf3147y","created":0,"sent":0,"failed":0,"skipped":0,"canceled":0,"rescheduled":0}
+stdout | tests/integration/authorization.test.ts > rota do ciclo de automação > com o segredo certo executa um ciclo
+[tick] {"runId":"cmvluy6vb001yupcwhnf3147y","created":0,"sent":0,"failed":0,"skipped":0,"canceled":0,"rescheduled":0}
 
- [32m✓[39m tests/integration/authorization.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 8837[2mms[22m[39m
-   [33m[2m✓[22m[39m o que a atendente não pode fazer[2m > [22mnão cria nem ativa regras [33m 2593[2mms[22m[39m
-   [33m[2m✓[22m[39m o que a atendente não pode fazer[2m > [22mnão altera configurações nem etapas do funil [33m 1092[2mms[22m[39m
-   [33m[2m✓[22m[39m o que a atendente não pode fazer[2m > [22mnão remove opt-out nem anonimiza lead [33m 1246[2mms[22m[39m
-   [33m[2m✓[22m[39m o que a atendente pode fazer[2m > [22mcadastra lead, pausa automação e edita modelos [33m 937[2mms[22m[39m
-   [33m[2m✓[22m[39m o que só o dono pode fazer[2m > [22mcria regra, ativa guardando o instante e altera configurações [33m 973[2mms[22m[39m
-   [33m[2m✓[22m[39m o que só o dono pode fazer[2m > [22mremove o opt-out e anonimiza o lead [33m 457[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do ciclo de automação[2m > [22msem o segredo compartilhado responde 401 e não executa nada [33m 689[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do ciclo de automação[2m > [22mcom o segredo certo executa um ciclo [33m 433[2mms[22m[39m
-   [33m[2m✓[22m[39m erros de autorização[2m > [22msão AppError com código FORBIDDEN, que a tela mostra como mensagem [33m 411[2mms[22m[39m
-[90mstderr[2m | tests/integration/webhook.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/authorization.test.ts (9 tests) 8837ms
+   ✓ o que a atendente não pode fazer > não cria nem ativa regras  2593ms
+   ✓ o que a atendente não pode fazer > não altera configurações nem etapas do funil  1092ms
+   ✓ o que a atendente não pode fazer > não remove opt-out nem anonimiza lead  1246ms
+   ✓ o que a atendente pode fazer > cadastra lead, pausa automação e edita modelos  937ms
+   ✓ o que só o dono pode fazer > cria regra, ativa guardando o instante e altera configurações  973ms
+   ✓ o que só o dono pode fazer > remove o opt-out e anonimiza o lead  457ms
+   ✓ rota do ciclo de automação > sem o segredo compartilhado responde 401 e não executa nada  689ms
+   ✓ rota do ciclo de automação > com o segredo certo executa um ciclo  433ms
+   ✓ erros de autorização > são AppError com código FORBIDDEN, que a tela mostra como mensagem  411ms
+stderr | tests/integration/webhook.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/webhook.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 3944[2mms[22m[39m
-   [33m[2m✓[22m[39m resposta e opt-out (RN-03, RN-04)[2m > [22mresposta cancela o que estava na fila e cria uma única tarefa Responder [33m 817[2mms[22m[39m
-   [33m[2m✓[22m[39m resposta e opt-out (RN-03, RN-04)[2m > [22mSAIR (com acento, caixa e pontuação) bloqueia todos os envios seguintes [33m 647[2mms[22m[39m
-   [33m[2m✓[22m[39m resposta e opt-out (RN-03, RN-04)[2m > [22mmesmo evento do webhook chegando duas vezes é descartado [33m 462[2mms[22m[39m
-   [33m[2m✓[22m[39m resposta e opt-out (RN-03, RN-04)[2m > [22mremetente desconhecido não cria lead nem quebra [33m 403[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do webhook (RNF-09, ADR-007)[2m > [22msem assinatura ou com assinatura errada responde 401 e não grava nada [33m 338[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do webhook (RNF-09, ADR-007)[2m > [22massinatura calculada sobre outro corpo é rejeitada [33m 415[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do webhook (RNF-09, ADR-007)[2m > [22massinatura válida processa a resposta; reenvio do mesmo evento vira duplicado [33m 534[2mms[22m[39m
-   [33m[2m✓[22m[39m rota do webhook (RNF-09, ADR-007)[2m > [22massinatura válida com JSON quebrado ou payload fora do formato responde 400 [33m 324[2mms[22m[39m
-[90mstderr[2m | tests/integration/import.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/webhook.test.ts (8 tests) 3944ms
+   ✓ resposta e opt-out (RN-03, RN-04) > resposta cancela o que estava na fila e cria uma única tarefa Responder  817ms
+   ✓ resposta e opt-out (RN-03, RN-04) > SAIR (com acento, caixa e pontuação) bloqueia todos os envios seguintes  647ms
+   ✓ resposta e opt-out (RN-03, RN-04) > mesmo evento do webhook chegando duas vezes é descartado  462ms
+   ✓ resposta e opt-out (RN-03, RN-04) > remetente desconhecido não cria lead nem quebra  403ms
+   ✓ rota do webhook (RNF-09, ADR-007) > sem assinatura ou com assinatura errada responde 401 e não grava nada  338ms
+   ✓ rota do webhook (RNF-09, ADR-007) > assinatura calculada sobre outro corpo é rejeitada  415ms
+   ✓ rota do webhook (RNF-09, ADR-007) > assinatura válida processa a resposta; reenvio do mesmo evento vira duplicado  534ms
+   ✓ rota do webhook (RNF-09, ADR-007) > assinatura válida com JSON quebrado ou payload fora do formato responde 400  324ms
+stderr | tests/integration/import.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/import.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 3353[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22mcria os leads pelo mesmo caminho do cadastro: telefone padronizado, etapa inicial, histórico [33m 479[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22mcomeça com a automação pausada, então a regra de lead novo não dispara em lead antigo [33m 755[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22msem a pausa (opção desmarcada), os leads entram na automação normalmente [33m 394[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22mpula telefone repetido e inválido, relata a linha e importa o resto [33m 647[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22mrepetido dentro do próprio arquivo também é pulado [33m 319[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22marquivo sem as colunas obrigatórias é recusado inteiro, sem criar nada [33m 434[2mms[22m[39m
-   [33m[2m✓[22m[39m importação da planilha (migração de leads)[2m > [22marquivo acima de 1 MB é recusado [33m 322[2mms[22m[39m
-[90mstderr[2m | tests/integration/seed-pilot.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/import.test.ts (7 tests) 3353ms
+   ✓ importação da planilha (migração de leads) > cria os leads pelo mesmo caminho do cadastro: telefone padronizado, etapa inicial, histórico  479ms
+   ✓ importação da planilha (migração de leads) > começa com a automação pausada, então a regra de lead novo não dispara em lead antigo  755ms
+   ✓ importação da planilha (migração de leads) > sem a pausa (opção desmarcada), os leads entram na automação normalmente  394ms
+   ✓ importação da planilha (migração de leads) > pula telefone repetido e inválido, relata a linha e importa o resto  647ms
+   ✓ importação da planilha (migração de leads) > repetido dentro do próprio arquivo também é pulado  319ms
+   ✓ importação da planilha (migração de leads) > arquivo sem as colunas obrigatórias é recusado inteiro, sem criar nada  434ms
+   ✓ importação da planilha (migração de leads) > arquivo acima de 1 MB é recusado  322ms
+stderr | tests/integration/seed-pilot.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/seed-pilot.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 2562[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mcria um funil válido, a configuração, os modelos e as regras [33m 396[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mtodas as regras nascem desligadas e sem instante de ativação [33m 385[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mnão cria contas nem leads de demonstração [33m 315[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mos modelos só usam variáveis conhecidas e passam na mesma validação da tela [33m 520[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mé idempotente: rodar de novo não duplica nada [33m 303[2mms[22m[39m
-   [33m[2m✓[22m[39m seed de piloto[2m > [22mcom tudo desligado, um lead novo não gera nenhum trabalho [33m 397[2mms[22m[39m
-[90mstderr[2m | tests/integration/health.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/seed-pilot.test.ts (7 tests) 2562ms
+   ✓ seed de piloto > cria um funil válido, a configuração, os modelos e as regras  396ms
+   ✓ seed de piloto > todas as regras nascem desligadas e sem instante de ativação  385ms
+   ✓ seed de piloto > não cria contas nem leads de demonstração  315ms
+   ✓ seed de piloto > os modelos só usam variáveis conhecidas e passam na mesma validação da tela  520ms
+   ✓ seed de piloto > é idempotente: rodar de novo não duplica nada  303ms
+   ✓ seed de piloto > com tudo desligado, um lead novo não gera nenhum trabalho  397ms
+stderr | tests/integration/health.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/health.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1955[2mms[22m[39m
-   [33m[2m✓[22m[39m healthcheck[2m > [22mresponde ok com o banco de pé e informa o provedor [33m 409[2mms[22m[39m
-   [33m[2m✓[22m[39m healthcheck[2m > [22minforma quando foi o último ciclo da automação [33m 404[2mms[22m[39m
-   [33m[2m✓[22m[39m healthcheck[2m > [22mcom regra ativa e nenhum ciclo, o agendador aparece como nunca rodou [33m 372[2mms[22m[39m
-   [33m[2m✓[22m[39m healthcheck[2m > [22mciclo recente é ok; ciclo parado há mais de 15 minutos é stale e o modo strict devolve 503 [33m 525[2mms[22m[39m
-[90mstderr[2m | tests/integration/dashboard.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/health.test.ts (5 tests) 1955ms
+   ✓ healthcheck > responde ok com o banco de pé e informa o provedor  409ms
+   ✓ healthcheck > informa quando foi o último ciclo da automação  404ms
+   ✓ healthcheck > com regra ativa e nenhum ciclo, o agendador aparece como nunca rodou  372ms
+   ✓ healthcheck > ciclo recente é ok; ciclo parado há mais de 15 minutos é stale e o modo strict devolve 503  525ms
+stderr | tests/integration/dashboard.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/integration/dashboard.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1537[2mms[22m[39m
-   [33m[2m✓[22m[39m painel[2m > [22mconta leads, valor por etapa, origem e motivos de perda a partir dos dados [33m 631[2mms[22m[39m
-   [33m[2m✓[22m[39m painel[2m > [22mconta mensagens enviadas e falhas, e lead sem resposta, a partir da automação [33m 653[2mms[22m[39m
-[90mstderr[2m | tests/unit/template.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/integration/dashboard.test.ts (3 tests) 1537ms
+   ✓ painel > conta leads, valor por etapa, origem e motivos de perda a partir dos dados  631ms
+   ✓ painel > conta mensagens enviadas e falhas, e lead sem resposta, a partir da automação  653ms
+stderr | tests/unit/template.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/template.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 65[2mms[22m[39m
-[90mstderr[2m | tests/unit/whatsapp-cloud.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/template.test.ts (10 tests) 65ms
+stderr | tests/unit/whatsapp-cloud.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/whatsapp-cloud.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 33[2mms[22m[39m
-[90mstderr[2m | tests/unit/csv.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/whatsapp-cloud.test.ts (12 tests) 33ms
+stderr | tests/unit/csv.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/csv.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 22[2mms[22m[39m
-[90mstderr[2m | tests/unit/due-rules.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/csv.test.ts (16 tests) 22ms
+stderr | tests/unit/due-rules.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/due-rules.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 16[2mms[22m[39m
-[90mstderr[2m | tests/unit/guards.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/due-rules.test.ts (14 tests) 16ms
+stderr | tests/unit/guards.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/guards.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 13[2mms[22m[39m
-[90mstderr[2m | tests/unit/business-hours.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/guards.test.ts (12 tests) 13ms
+stderr | tests/unit/business-hours.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/business-hours.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 13[2mms[22m[39m
-[90mstderr[2m | tests/unit/opt-out.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/business-hours.test.ts (10 tests) 13ms
+stderr | tests/unit/opt-out.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/opt-out.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 13[2mms[22m[39m
-[90mstderr[2m | tests/unit/phone.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/opt-out.test.ts (15 tests) 13ms
+stderr | tests/unit/phone.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/phone.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 11[2mms[22m[39m
-[90mstderr[2m | tests/unit/signature.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/phone.test.ts (14 tests) 11ms
+stderr | tests/unit/signature.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/signature.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
-[90mstderr[2m | tests/unit/backoff.test.ts
-[22m[39m◇ injected env (0) from .env
+ ✓ tests/unit/signature.test.ts (4 tests) 9ms
+stderr | tests/unit/backoff.test.ts
+◇ injected env (0) from .env
 
- [32m✓[39m tests/unit/backoff.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ ✓ tests/unit/backoff.test.ts (4 tests) 8ms
 
-[2m Test Files [22m [1m[32m19 passed[39m[22m[90m (19)[39m
-[2m      Tests [22m [1m[32m200 passed[39m[22m[90m (200)[39m
-[2m   Start at [22m 00:46:19
-[2m   Duration [22m 81.95s[2m (transform 4.50s, setup 369ms, collect 4.70s, tests 54.81s, environment 8ms, prepare 4.19s)[22m
+ Test Files  19 passed (19)
+      Tests  200 passed (200)
+   Start at  00:46:19
+   Duration  81.95s (transform 4.50s, setup 369ms, collect 4.70s, tests 54.81s, environment 8ms, prepare 4.19s)
 
 --- saída: código 0

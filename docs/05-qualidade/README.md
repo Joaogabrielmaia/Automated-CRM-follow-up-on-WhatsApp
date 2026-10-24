@@ -28,7 +28,7 @@ Foi esse build que expôs o defeito do `loading.tsx` ([ADR-010](../03-arquitetur
 | `npm run test:e2e` | 16 testes no navegador (Chromium), contra o **build de produção** | Sim |
 | `npm run typecheck` e `npm run lint` | Tipos e estilo | Não |
 
-A mesma sequência roda a cada push na CI (`.github/workflows/ci.yml`), com um Postgres de verdade. **Ela ainda não rodou no GitHub.**
+A mesma sequência roda a cada push na CI (`.github/workflows/ci.yml`), com um Postgres de verdade. Último run na `main`, no commit `cbbcc47`: [sucesso](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/39980673278).
 
 ## Última execução registrada
 
@@ -79,7 +79,7 @@ Fica registrado para não parecer mais pronto do que está.
 
 - **WhatsApp Cloud API de verdade.** O envio, o envio de modelo e o webhook da Meta foram escritos conforme a documentação pública e testados com a rede e os payloads simulados por mim. **Nunca falaram com a Meta.** A Meta pode devolver um erro ou um formato que eu não previ. Antes de usar com clientes reais, é preciso testar na sandbox da Meta (ver [rollout](../06-go-live/rollout.md), Fase 2).
 - **Hospedagem.** O projeto não é hospedado: roda localmente. O que depende só do código (migrations em banco vazio, build de produção) foi testado.
-- **CI no GitHub.** O workflow existe; ainda não rodou.
+- **CI em pull request.** Os runs registrados até aqui são de push na `main`; o primeiro run de PR é o desta branch.
 - **Agendamento contínuo do n8n.** Relato do autor, sem log arquivado: executei a chamada uma vez; não deixei o agendador rodando por horas.
 - **Navegadores.** O E2E roda só em Chromium.
 - **Acessibilidade.** Há rótulos e papéis ARIA nos formulários e os seletores dos testes dependem deles, mas não rodei verificação automática (por exemplo axe) nem testei com leitor de tela.
