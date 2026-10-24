@@ -19,6 +19,8 @@ Guia da série sobre o Pulso, um mini CRM com funil de vendas e follow-up autom�
 
 Galeria dos prints: [imagens](imagens/README.md).
 
+Relatório do ciclo de vida, com sprints, reuniões, requisitos, arquitetura, dados, testes, implantação e evolução: [ciclo-de-vida](ciclo-de-vida/README.md).
+
 ## Trilhas de leitura
 
 ### Em 2 minutos
@@ -62,6 +64,7 @@ Galeria dos prints: [imagens](imagens/README.md).
 |---|---|
 | `docs/00-sobre-este-caso` a `docs/07-pos-go-live` | Um episódio por pasta, com a página de abertura em `README.md` |
 | `docs/03-arquitetura/adr` | Decisões de arquitetura. Não existe ADR-009; a numeração segue de 008 para 010 |
+| `docs/ciclo-de-vida` | Relatório do ciclo de vida: nove documentos, [sprints](ciclo-de-vida/sprints/README.md), [reuniões](ciclo-de-vida/reunioes/README.md) e [diagramas](ciclo-de-vida/diagramas/README.md) |
 | `docs/imagens` | Prints do app e a [galeria](imagens/README.md) |
 | `docs/05-qualidade` | Estratégia de testes e os logs de execução (`execucao-*.txt`), com data, commit e comando no cabeçalho |
 | [`src`](../src) | O app: telas, rotas, regras puras (`src/lib/rules`), orquestração com banco (`src/lib/automation`) e provedores de mensagem |

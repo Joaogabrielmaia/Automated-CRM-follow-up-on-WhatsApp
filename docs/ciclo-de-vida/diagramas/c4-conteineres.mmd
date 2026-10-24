@@ -1,0 +1,20 @@
+flowchart LR
+    BR["Navegador"] -->|"HTTPS"| APP
+    subgraph APP["App Next.js"]
+        UI["Páginas e Server Actions"]
+        API["Rotas: tick, webhooks, health"]
+        SV["src/lib/services"]
+        EN["src/lib/automation<br/>motor e respostas"]
+        RL["src/lib/rules<br/>funções puras"]
+        PV["src/lib/providers<br/>MessageProvider"]
+    end
+    UI --> SV
+    API --> EN
+    API --> SV
+    EN --> RL
+    SV --> DB[("PostgreSQL")]
+    EN --> DB
+    EN --> PV
+    PV --> SIM["Provedor simulado (padrão)"]
+    PV -.-> WAC["WhatsApp Cloud API"]
+    N8["n8n"] -->|"x-automation-secret"| API

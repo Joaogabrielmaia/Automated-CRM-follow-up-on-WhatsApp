@@ -1,0 +1,4 @@
+flowchart LR
+    T["Gatilho: a cada 5 minutos"] --> H["POST /api/automation/tick<br/>timeout 60 s, 3 tentativas, 5 s entre elas"]
+    H --> OK["200 com o resumo do ciclo"]
+    H --> NA["401 sem o segredo certo"]

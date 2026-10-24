@@ -1,0 +1,17 @@
+flowchart TD
+    A([Lead chega: Instagram, indicação, anúncio]) --> B[Cadastro pela atendente ou importação CSV]
+    B --> C{Dentro do horário comercial?}
+    C -- sim --> D[Boas-vindas 5 min depois do cadastro - RN-12]
+    C -- não --> C2[Mensagem espera na fila até a abertura - RN-02]
+    C2 --> D
+    D --> E[Atendente envia o orçamento e registra o contato]
+    E --> F[Ciclo sem resposta começa - RN-08]
+    F --> G[Follow-up 1 após 24 h - RN-07]
+    G --> H[Follow-up 2 após 72 h - RN-07]
+    H --> I[Perdido após 120 h, com motivo - RN-07]
+    F --> R{Lead respondeu?}
+    G --> R
+    H --> R
+    R -- sim --> S[Fila cancelada e tarefa Responder para a atendente - RN-04]
+    R -- SAIR, PARAR ou STOP --> T[Opt-out: nenhum envio novo - RN-03]
+    S --> U[Negociação, ganho ou perda com motivo - RF-18]

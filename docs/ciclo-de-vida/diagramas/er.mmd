@@ -1,0 +1,91 @@
+erDiagram
+    User ||--o{ Lead : "é responsável"
+    User ||--o{ Task : "é responsável"
+    Stage ||--o{ Lead : "contém"
+    Lead ||--o{ Interaction : "tem"
+    Lead ||--o{ Task : "tem"
+    Lead ||--o{ StageHistory : "passou por"
+    Stage ||--o{ StageHistory : "destino"
+    Lead ||--o{ AutomationJob : "recebe"
+    Lead ||--o{ WebhookEvent : "origina"
+    AutomationRule ||--o{ AutomationJob : "gera"
+    MessageTemplate ||--o{ AutomationRule : "é usado por"
+    AutomationJob ||--o{ AutomationLog : "registra"
+    AutomationRun ||--o{ AutomationLog : "agrupa"
+
+    User { string id PK
+           string name
+           string email UK
+           string passwordHash
+           enum role "ADMIN | ATTENDANT" }
+    Stage { string id PK
+            string name
+            int position
+            enum kind "OPEN | QUOTE | WON | LOST" }
+    Lead { string id PK
+           string name
+           string phone UK "+55DDDNUMERO"
+           string source
+           string interest
+           decimal estimatedValue
+           string stageId FK
+           string ownerId FK
+           string lostReason
+           datetime optedOutAt
+           bool automationPaused
+           datetime lastInboundAt
+           datetime lastOutboundAt
+           datetime cycleStartedAt
+           datetime stageChangedAt
+           datetime archivedAt
+           datetime anonymizedAt }
+    Interaction { string id PK
+                  string leadId FK
+                  enum type "MESSAGE_OUT | MESSAGE_IN | NOTE | STAGE_CHANGE | SYSTEM"
+                  string body
+                  datetime createdAt }
+    Task { string id PK
+           string leadId FK
+           string title
+           datetime dueAt
+           datetime doneAt
+           bool createdBySystem }
+    StageHistory { string id PK
+                   string leadId FK
+                   string fromStageId
+                   string toStageId FK
+                   datetime at }
+    MessageTemplate { string id PK
+                      string name
+                      string body "com {nome} {servico} {valor}" }
+    AutomationRule { string id PK
+                     string name
+                     enum trigger "NEW_LEAD | NO_REPLY | QUOTE_NO_RETURN"
+                     int afterMinutes
+                     enum action "SEND_MESSAGE | CREATE_TASK | MOVE_TO_LOST"
+                     string templateId FK
+                     bool active
+                     datetime activatedAt }
+    AutomationJob { string id PK
+                    string idempotencyKey UK
+                    string leadId FK
+                    string ruleId FK
+                    enum status "PENDING | SENDING | SENT | DONE | FAILED | CANCELED | SKIPPED"
+                    datetime scheduledFor
+                    int attempts
+                    string reason
+                    string providerMessageId }
+    AutomationLog { string id PK
+                    datetime at
+                    string event
+                    string detail }
+    AutomationRun { string id PK
+                    datetime startedAt
+                    datetime finishedAt }
+    WebhookEvent { string id PK
+                   string externalId UK
+                   datetime receivedAt }
+    Setting { int id PK "sempre 1"
+              json businessHours
+              int maxMessagesPerCycle
+              int minGapMinutes }

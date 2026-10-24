@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    participant AT as Atendente
+    participant APP as App
+    participant DB as PostgreSQL
+    participant N8 as n8n
+    participant PR as MessageProvider
+    participant LD as Lead
+
+    AT->>APP: registra o contato feito fora do sistema
+    APP->>DB: cycleStartedAt = agora (RN-08)
+    N8->>APP: POST tick (a cada 5 min)
+    APP->>DB: computeDue: follow-up 1 vence em 24 h (RN-07)
+    APP->>DB: INSERT job ON CONFLICT DO NOTHING (RN-05)
+    APP->>DB: UPDATE status=SENDING WHERE status=PENDING (reserva)
+    APP->>DB: relê o lead: opt-out, pausa, resposta, etapa, limites (RN-03, RN-04, RN-06, RN-10, RN-18)
+    alt fora do horário comercial
+        APP->>DB: volta a PENDING na próxima janela (RN-02)
+    else pode enviar
+        APP->>PR: send(to, body, chave)
+        PR-->>APP: id da mensagem
+        APP->>DB: SENT e interação MESSAGE_OUT
+    end
+    LD->>APP: resposta pelo webhook assinado (RNF-09)
+    APP->>DB: cancela jobs pendentes e cria a tarefa Responder (RN-04)
