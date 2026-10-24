@@ -274,6 +274,4 @@ MIT. O código roda localmente; instruções no arquivo [CONTRIBUTING.md](CONTRI
 
 ## Nota de contexto acadêmico
 
-Este material integra um estudo de caso. A empresa, as pessoas e os dados são fictícios, e as reuniões de discovery e de validação do protótipo são registros simulados, identificados por papel. Cronogramas, sprints e cerimônias foram elaborados para compor o cenário de aprendizagem e não correspondem a datas de commits, releases ou execuções.
-
-A inteligência artificial foi usada na construção do cenário (nos papéis do dono, da atendente e da cliente-tipo dos registros simulados) e na redação e revisão da documentação. Resultados de testes e da CI vêm de execuções reais, com data e commit.
+Este repositório é um estudo de caso. A Rota Fácil Software, as pessoas, os clientes e os dados são fictícios. Reuniões, atas, o cronograma das sprints e as cerimônias foram elaborados para compor o cenário de aprendizagem, com participantes identificados por papel; Houve uso de IA generativa (Claude, da Anthropic) na construção do cenário, incluindo a simulação das reuniões, e como apoio ao desenvolvimento e à documentação. O modelo do cenário, as decisões de escopo e de arquitetura e a verificação dos resultados foram definidos e conferidos pelo autor. Os resultados de testes e de CI citados vêm de execuções registradas e não são resultados ilustrativos.
