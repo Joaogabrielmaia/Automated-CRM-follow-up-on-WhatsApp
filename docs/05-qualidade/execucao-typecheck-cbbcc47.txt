@@ -1,0 +1,10 @@
+data: 2026-10-24T00:47:42-03:00
+commit: cbbcc47 (código idêntico ao desta branch; só .md e imagens mudam)
+node: v24.14.0
+comando: npm run typecheck
+---
+
+> pulso@1.0.0 typecheck
+> tsc --noEmit
+
+--- saída: código 0

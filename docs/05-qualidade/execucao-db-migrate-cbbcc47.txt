@@ -1,0 +1,24 @@
+data: 2026-10-24T00:46:01-03:00
+commit: cbbcc47 (código idêntico ao desta branch; só .md e imagens mudam)
+node: v24.14.0
+comando: npm run db:migrate
+---
+
+> pulso@1.0.0 db:migrate
+> prisma migrate dev
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "pulso", schema "public" at "localhost:5434"
+
+Already in sync, no schema change or pending migration was found.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 295ms
+
+
+--- saída: código 0
