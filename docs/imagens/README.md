@@ -4,6 +4,12 @@ Os 11 prints do app rodando com os dados de demonstração, na ordem do fluxo: e
 
 ← [Índice](../INDEX.md)
 
+## Demonstração
+
+![Gravação do app: a atendente registra um contato na lead Carla Mendes, o ciclo envia o follow-up 1, a lead responde pelo simulador, e o log mostra "Lead respondeu" e a tarefa "Responder Carla" aparece em Hoje](demo-followup.gif)
+
+Fluxo real de 23 segundos, sem edição além do corte do login e da espera do ciclo. O follow-up só vence em 24 h, então o ciclo rodou com data simulada pelo recurso do próprio projeto (`npm run tick -- 2026-10-26T08:05:00-03:00`). Por isso, no log, o envio (26/10) aparece com data posterior à resposta (24/10, data real).
+
 ## 1. Login
 
 ![Tela de login do Pulso: título, subtítulo "Funil de leads e follow-up no WhatsApp", campos E-mail e Senha e botão Entrar](01-login.png)
@@ -18,9 +24,9 @@ Duas tarefas do dia, uma delas "Responder Bruno" marcada como criada pela automa
 
 ## 3. Funil
 
-![Quadro do funil com as colunas Novo (3 leads), Contatado (1), Orçamento enviado (1) e Negociação (vazia), busca, botões Importar CSV e Novo lead](03-funil.png)
+![Quadro do funil com as seis colunas: Novo (3 leads), Contatado (1), Orçamento enviado (1), Negociação (0), Ganho (1) e Perdido (1), com busca e botões Importar CSV e Novo lead](03-funil.png)
 
-As quatro primeiras colunas do quadro; Ganho e Perdido ficam à direita, fora do print. Os cartões trazem os selos "Pediu para sair" e "Sem resposta agora" e um seletor com botão Mover · as etapas são configuráveis ([ADR-006](../03-arquitetura/adr/ADR-006-etapas-configuraveis.md)) e mover pelo seletor foi a alternativa ao arrastar e soltar ([validação do protótipo](../04-prototipo/02-validacao-do-prototipo.md), pedido 1).
+As seis colunas do quadro, cada cartão com um seletor de etapa e o botão Mover; no cartão de Perdido há o campo "Motivo da perda" · as etapas são configuráveis ([ADR-006](../03-arquitetura/adr/ADR-006-etapas-configuraveis.md)) e mover pelo seletor foi a alternativa ao arrastar e soltar ([validação do protótipo](../04-prototipo/02-validacao-do-prototipo.md), pedido 1); mover para Perdido exige motivo (RN-09).
 
 ## 4. Lead
 

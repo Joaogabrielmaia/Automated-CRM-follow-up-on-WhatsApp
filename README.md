@@ -32,7 +32,7 @@ Guia completo da série: [docs/INDEX.md](docs/INDEX.md). Termos técnicos: [glos
 <table>
 <tr>
 <td width="50%"><img src="docs/imagens/04-lead.png" alt="Detalhe de um lead com linha do tempo, próximo passo da automação (follow-up 1 em 24h, follow-up 2 em 72h, Perdido em 120h) e botão Pausar automação"></td>
-<td width="50%"><img src="docs/imagens/03-funil.png" alt="Quadro do funil com as colunas Novo, Contatado, Orçamento enviado e Negociação"></td>
+<td width="50%"><img src="docs/imagens/03-funil.png" alt="Quadro do funil com as seis colunas: Novo, Contatado, Orçamento enviado, Negociação, Ganho e Perdido"></td>
 </tr>
 <tr>
 <td width="50%"><img src="docs/imagens/06-regras.png" alt="Lista de seis regras de automação ativas, com gatilho, espera, ação e texto do modelo"></td>
@@ -40,7 +40,9 @@ Guia completo da série: [docs/INDEX.md](docs/INDEX.md). Termos técnicos: [glos
 </tr>
 </table>
 
-Todas as telas, com legenda: [galeria](docs/imagens/README.md).
+![Gravação do app: o ciclo envia o follow-up 1 à lead Carla Mendes, ela responde pelo simulador e o log registra "Lead respondeu" com a sequência interrompida](docs/imagens/demo-followup.gif)
+
+Fluxo real de 23 segundos: contato registrado, follow-up enviado (ciclo com data simulada, pois ele só vence em 24 h), resposta pelo simulador e parada da sequência. [Detalhes e demais telas](docs/imagens/README.md).
 
 ## As 4 garantias
 
