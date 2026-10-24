@@ -268,10 +268,12 @@ Evolução prevista, por prioridade: validar o adaptador na sandbox da Meta, cad
 
 [Ciclo de vida](docs/ciclo-de-vida/README.md) · [Sprints](docs/ciclo-de-vida/sprints/README.md) · [Reuniões](docs/ciclo-de-vida/reunioes/README.md) · [Diagramas](docs/ciclo-de-vida/diagramas/README.md) · [Guia da série](docs/INDEX.md) · [Glossário](docs/GLOSSARIO.md) · [Galeria](docs/imagens/README.md) · [Qualidade](docs/05-qualidade/README.md)
 
-## Licença
-
-MIT. O código roda localmente; instruções no arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
-
 ## Nota de contexto acadêmico
 
-Este repositório é um estudo de caso. A Rota Fácil Software, as pessoas, os clientes e os dados são fictícios. Reuniões, atas, o cronograma das sprints e as cerimônias foram elaborados para compor o cenário de aprendizagem, com participantes identificados por papel; Houve uso de IA generativa (Claude, da Anthropic) na construção do cenário, incluindo a simulação das reuniões, e como apoio ao desenvolvimento e à documentação. O modelo do cenário, as decisões de escopo e de arquitetura e a verificação dos resultados foram definidos e conferidos pelo autor. Os resultados de testes e de CI citados vêm de execuções registradas e não são resultados ilustrativos.
+Este projeto é um estudo de caso acadêmico, com dados, empresas e atividades de gestão simulados.
+
+A IA generativa (Claude, da Anthropic) foi utilizada como apoio ao desenvolvimento e à documentação. As decisões e os resultados foram revisados pelo autor, e os testes citados seguem as evidências registradas.
+
+## Licença
+
+[MIT](LICENSE).
