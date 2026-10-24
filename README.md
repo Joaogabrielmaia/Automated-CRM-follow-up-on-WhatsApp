@@ -2,32 +2,10 @@
 
 **Mini CRM com funil de vendas e follow-up automático no WhatsApp: regras configuráveis, horário comercial, sem duplicar mensagem, parada na resposta e opt-out.**
 
-## Em 30 segundos
+## O problema
 
-- **Problema:** numa empresa fictícia de reformas, o lead esfria depois do orçamento porque ninguém lembra de voltar a falar com ele.
-- **Solução:** o Pulso agenda o retorno e o executa por regras, com quatro travas para não incomodar o cliente.
-- **Prova:** 200 testes de unidade e integração e 16 de ponta a ponta passaram em 24/10/2026 ([log](docs/05-qualidade/execucao-test-cbbcc47.txt)). Um defeito que só aparecia em produção foi medido: com `loading.tsx`, 3/40 e 5/40 falhas; sem ele, 0/60 e 0/40 (tabela do autor, [ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md)).
-- **Comece por aqui:** [tela do lead](docs/imagens/04-lead.png) · [ADR-003: idempotência](docs/03-arquitetura/adr/ADR-003-idempotencia.md) · [o que foi e o que não foi testado](docs/05-qualidade/README.md)
-
-## Ficha técnica
-
-| Campo | Informação |
-|---|---|
-| Natureza | Caso fictício: empresa (Casa Nova Reformas), pessoas e dados inventados |
-| Discovery | Reuniões simuladas, marcadas nas atas ([Ep. 1](docs/01-discovery/README.md)) |
-| Stack | Next.js 15, React 19, TypeScript, Prisma, PostgreSQL, Zod, Vitest, Playwright, n8n |
-| Mensagens | Provedor simulado; adaptador da WhatsApp Cloud API não validado contra a Meta |
-| Agendador | n8n dispara o ciclo a cada 5 minutos |
-| Testes | 200 de unidade e integração (111 + 89) e 16 E2E; log de 24/10/2026, commit `cbbcc47` |
-| Execução | Local; não hospedado |
-
-## Duas entradas
-
-**Pelo lado do negócio.** [Ep. 1 Discovery](docs/01-discovery/README.md): o problema e as reuniões simuladas. [Ep. 2 Definição](docs/02-definicao/README.md): requisitos, regras e metas. [Ep. 6 Go-live](docs/06-go-live/README.md): como entraria em uso. [Ep. 7 Pós-go-live](docs/07-pos-go-live/README.md): operação e retrospectiva.
-
-**Pelo lado técnico.** [Ep. 3 Arquitetura](docs/03-arquitetura/README.md): modelo de dados, fluxo, modos de falha e ADRs. [Ep. 5 Qualidade](docs/05-qualidade/README.md): testes, logs de execução e limites.
-
-Guia completo da série: [docs/INDEX.md](docs/INDEX.md). Termos técnicos: [glossário](docs/GLOSSARIO.md).
+Cenário fictício: numa empresa de reformas com 6 pessoas, o orçamento sai e o retorno depende de alguém lembrar. O lead esfria.
+Automatizar o retorno é simples. O difícil é fazer isso sem insistência, sem mensagem de madrugada e sem enviar a mesma mensagem duas vezes.
 
 <table>
 <tr>
@@ -42,70 +20,42 @@ Guia completo da série: [docs/INDEX.md](docs/INDEX.md). Termos técnicos: [glos
 
 ![Gravação do app: o ciclo envia o follow-up 1 à lead Carla Mendes, ela responde pelo simulador e o log registra "Lead respondeu" com a sequência interrompida](docs/imagens/demo-followup.gif)
 
-Fluxo real de 23 segundos: contato registrado, follow-up enviado (ciclo com data simulada, pois ele só vence em 24 h), resposta pelo simulador e parada da sequência. [Detalhes e demais telas](docs/imagens/README.md).
+Fluxo real de 23 segundos: contato registrado, follow-up enviado, resposta pelo simulador e parada da sequência. O follow-up só vence em 24 h, então o ciclo rodou com data simulada pelo recurso do próprio projeto; por isso o envio aparece com data posterior à resposta. [Detalhes e demais telas](docs/imagens/README.md).
 
-## As 4 garantias
+## Ficha técnica
 
-| Garantia | Regra |
+| Campo | Informação |
 |---|---|
-| Só envia em **horário comercial**; fora dele, a mensagem espera na fila | [RN-01 e RN-02](docs/02-definicao/03-regras-de-negocio.md) |
-| **Nunca duas vezes** a mesma mensagem, nem com dois ciclos ao mesmo tempo | [RN-05](docs/02-definicao/03-regras-de-negocio.md) · [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) |
-| **Para quando o lead responde** e cria uma tarefa para a atendente | [RN-04](docs/02-definicao/03-regras-de-negocio.md) |
-| **Respeita o opt-out**: SAIR, PARAR ou STOP bloqueiam novos envios | [RN-03](docs/02-definicao/03-regras-de-negocio.md) |
+| Natureza | Estudo de caso fictício |
+| Stack | Next.js 15, React 19, TypeScript, Prisma, PostgreSQL, Zod, Vitest, Playwright, n8n |
+| Testes | 200 de unidade e integração (111 + 89) e 16 E2E; 24/10/2026, commit `cbbcc47` ([logs](docs/05-qualidade/README.md)) |
 
-## O problema
+Guia da série: [docs/INDEX.md](docs/INDEX.md) · [glossário](docs/GLOSSARIO.md) · [galeria](docs/imagens/README.md).
 
-Em uma empresa pequena de serviços, o orçamento sai e o retorno depende de alguém lembrar. O lead esfria.
-Automatizar o retorno é simples; o difícil é fazer isso sem virar insistência, mensagem de madrugada ou resposta duplicada. Detalhes: [Ep. 1](docs/01-discovery/README.md).
+## O que construí
 
-## O que faz
+- Implementei as quatro garantias: envio só em horário comercial (RN-01), nunca a mesma mensagem duas vezes (RN-05), parada quando o lead responde (RN-04) e opt-out por SAIR, PARAR ou STOP (RN-03). ([regras](docs/02-definicao/03-regras-de-negocio.md))
+- Garanti a idempotência em dois níveis no banco: chave única na criação do job e reserva atômica antes do envio. ([ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md))
+- Construí a fila que respeita a janela comercial em UTC−3: fora do horário a mensagem espera e sai na abertura seguinte. ([RN-02](docs/02-definicao/03-regras-de-negocio.md), [ADR-004](docs/03-arquitetura/adr/ADR-004-agendamento-e-fila.md))
+- Implementei retentativa com backoff de 1, 5 e 15 minutos; erro definitivo não tenta de novo. ([RN-11](docs/02-definicao/03-regras-de-negocio.md), [ADR-005](docs/03-arquitetura/adr/ADR-005-retentativa-e-falhas.md))
+- Escrevi o motor de regras como funções puras que recebem a hora, testáveis sem esperar o relógio. ([`src/lib/rules`](src/lib/rules))
+- Usei o n8n só como agendador: ele dispara o ciclo a cada 5 minutos e toda decisão fica no app. ([ADR-001](docs/03-arquitetura/adr/ADR-001-n8n-ou-jobs-em-codigo.md), [`automations/tick.json`](automations/tick.json))
 
-- Funil de leads com etapas configuráveis, linha do tempo e tarefas por lead.
-- Regras com gatilho, espera e ação: enviar mensagem, criar tarefa ou mover para Perdido.
-- Modelos de mensagem com variáveis; se faltar um dado, a mensagem é pulada (RN-14).
-- Log de cada decisão do motor e simulador de resposta do lead.
-- Painel de indicadores e importação de leads por CSV.
-
-## O que este projeto mostra
-
-- Regras de negócio escritas como funções puras que recebem a hora, testáveis sem esperar o relógio.
-- Idempotência em duas camadas no banco, com teste de concorrência.
-- Um defeito que só existia no build de produção, diagnosticado por medição e não por palpite.
-
-## O que o projeto exercita, e onde está a prova
+## Competência → prova
 
 | O que o projeto exercita | Onde está a prova |
 |---|---|
-| Traduzir "tudo automático" em regras verificáveis | [19 regras com valor padrão](docs/02-definicao/03-regras-de-negocio.md) e [rastreabilidade](docs/02-definicao/07-rastreabilidade.md) |
-| Desenhar follow-up que respeita horário, resposta e opt-out | [Tela de regras](docs/imagens/06-regras.png) e as regras RN-01 a RN-04 |
-| Garantir que a mesma mensagem não saia duas vezes | [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) |
+| Traduzir "tudo automático" em regras verificáveis | [19 regras com valor padrão](docs/02-definicao/03-regras-de-negocio.md) |
+| Idempotência em dois níveis | [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) |
 | Diagnosticar um defeito só de produção com medição | [ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md) |
 | Recusar escopo com motivo | [Validação do protótipo](docs/04-prototipo/02-validacao-do-prototipo.md): reunião simulada, 2 recusados, 3 adiados, 5 aceitos |
-| Escrever mensagem de follow-up com critério | [Boas práticas de mensagem](docs/06-go-live/boas-praticas-de-mensagem.md) e [modelos](docs/imagens/07-modelos.png) |
-| Planejar operação e volta atrás | [Go-live](docs/06-go-live/README.md) e [runbook](docs/07-pos-go-live/runbook.md), com o status declarado em cada um |
+| Rastrear requisito até o teste | [Matriz de rastreabilidade](docs/02-definicao/07-rastreabilidade.md), 25 linhas |
+| Escrever mensagem de follow-up com critério | [Boas práticas de mensagem](docs/06-go-live/boas-praticas-de-mensagem.md) |
+| Planejar operação e volta atrás | [Rollback](docs/06-go-live/rollback.md) e [runbook](docs/07-pos-go-live/runbook.md), planos sem ensaio |
 
-## Episódios
+## Decisão difícil: não enviar duas vezes
 
-| Ep. | Tema | Leia |
-|---|---|---|
-| 0 | Sobre este caso | [Real × simulado](docs/00-sobre-este-caso/README.md) |
-| 1 | Discovery | [Problema, personas e reuniões simuladas](docs/01-discovery/README.md) |
-| 2 | Definição | [Requisitos, regras e metas](docs/02-definicao/README.md) |
-| 3 | Arquitetura | [Fluxo, modos de falha e ADRs](docs/03-arquitetura/README.md) |
-| 4 | Protótipo | [Wireframes e validação simulada](docs/04-prototipo/README.md) |
-| 5 | Qualidade | [Testes, logs e limites](docs/05-qualidade/README.md) |
-| 6 | Go-live | [Rollout, n8n, rollback e treinamento](docs/06-go-live/README.md) |
-| 7 | Pós-go-live | [Runbook e retrospectiva](docs/07-pos-go-live/README.md) |
-
-## Decisões que contam
-
-| ADR | Decisão |
-|---|---|
-| [003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) | Idempotência por chave única no banco e reserva atômica antes do envio |
-| [005](docs/03-arquitetura/adr/ADR-005-retentativa-e-falhas.md) | Retentativa com backoff de 1, 5 e 15 minutos; erro definitivo não tenta de novo |
-| [010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md) | Sem `loading.tsx`: ações deixavam de atualizar a tela só no build de produção |
-
-**A decisão difícil: não enviar duas vezes.** Texto de [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) e do [registro do dono](docs/01-discovery/03-registro-dono.md).
+Texto de [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) e do [registro do dono](docs/01-discovery/03-registro-dono.md).
 
 | | |
 |---|---|
@@ -118,53 +68,26 @@ Automatizar o retorno é simples; o difícil é fazer isso sem virar insistênci
 
 ## Evidências
 
-Execução de 24/10/2026 no commit `cbbcc47`, com data, versão do Node e comando no cabeçalho de cada log: [teste](docs/05-qualidade/execucao-test-cbbcc47.txt) · [E2E](docs/05-qualidade/execucao-test-e2e-cbbcc47.txt) · [tipos](docs/05-qualidade/execucao-typecheck-cbbcc47.txt) · [lint](docs/05-qualidade/execucao-lint-cbbcc47.txt).
-
-| Grupo | Testes por arquivo |
-|---|---|
-| Unitários (111) | csv 16, opt-out 15, due-rules 14, phone 14, whatsapp-cloud 12, guards 12, template 10, business-hours 10, backoff 4, signature 4 |
-| Integração (89) | engine 21, leads 15, webhook-meta 14, authorization 9, webhook 8, import 7, seed-pilot 7, health 5, dashboard 3 |
-| E2E (16) | funil 5, login-e-papeis 5, regras 2, importação 2, simulador 2 |
-
-A CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) roda tipos, lint, testes e E2E a cada push na `main`. O último run antes desta branch, no commit `cbbcc47`, terminou com sucesso ([run](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/39980673278)).
-
-## Rodar localmente
-
-Precisa de Node 20.9+ e Docker.
-
-```bash
-cp .env.example .env        # preencha AUTH_SECRET, AUTOMATION_SECRET e WEBHOOK_SECRET
-npm install
-npm run db:up               # Postgres na porta 5434
-npm run db:migrate
-npm run db:seed             # contas de teste e leads fictícios
-npm run dev                 # http://localhost:3000
-```
-
-Contas de teste (senha `Demo@2026`): `marcos@casanova.example` (Admin) e `camila@casanova.example` (Atendente).
-
-| Comando | O que faz |
-|---|---|
-| `npm test` | Unitários e integração (precisa do banco no ar) |
-| `npm run test:e2e` | Testes no navegador, contra o build de produção |
-| `npm run typecheck` / `npm run lint` | Tipos e estilo |
-| `npm run tick` | Roda um ciclo da automação na linha de comando |
-| `npm run simulate:reply -- <telefone> "<texto>"` | Simula uma resposta de lead |
-
-O n8n é opcional e sobe com `docker compose --profile n8n up -d n8n`: [passo a passo](docs/06-go-live/n8n.md).
-
-## O que falta para sair do estudo
-
-- Integração com a Meta não validada: [limites](docs/05-qualidade/README.md).
-- Agendamento do n8n por horas não testado: [n8n](docs/06-go-live/n8n.md).
-- Rollback, runbook e treinamento não ensaiados: [rollback](docs/06-go-live/rollback.md) · [runbook](docs/07-pos-go-live/runbook.md) · [treinamento](docs/06-go-live/treinamento.md).
-- Sem hospedagem: [qualidade](docs/05-qualidade/README.md).
-- Acessibilidade e carga não testadas; RNF-05 sem teste automático: [qualidade](docs/05-qualidade/README.md).
+- 200 testes de unidade e integração (111 + 89) e 16 E2E passaram em 24/10/2026, commit `cbbcc47`: [log dos testes](docs/05-qualidade/execucao-test-cbbcc47.txt) e [log do E2E](docs/05-qualidade/execucao-test-e2e-cbbcc47.txt).
+- CI verde em 24/10/2026: [run 40097777544](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/40097777544) no PR (commit `f809e1c`) e [run 40097919766](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/40097919766) na `main` (commit `e9b0079`).
+- 19 regras de negócio (RN-01 a RN-19) e 25 linhas de rastreabilidade, de 23/10/2026, commit `36beb66`: [regras](docs/02-definicao/03-regras-de-negocio.md) e [matriz](docs/02-definicao/07-rastreabilidade.md).
+- Medição do defeito do `loading.tsx`: com o arquivo, 3/40 e 5/40 falhas; sem ele, 0/60 e 0/40. Tabela do autor, resultado bruto não arquivado: [ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md), de 23/10/2026, correção no commit `1cb4fd7`.
+- 11 prints do app e uma gravação de 23 s, de 24/10/2026, commit `f809e1c`: [galeria](docs/imagens/README.md).
 
 ## Limites
 
-Não há usuário real, piloto nem medição de resultado: as metas M1 a M6 são hipóteses ([metas](docs/02-definicao/01-visao-e-metas.md)). O envio é simulado e o fuso é fixo em UTC−3 ([ADR-004](docs/03-arquitetura/adr/ADR-004-agendamento-e-fila.md)).
+- O envio usa um provedor simulado; o adaptador da WhatsApp Cloud API não foi validado contra a Meta.
+- O agendamento do n8n rodando por horas não foi testado.
+- Rollback e runbook são planos; nenhum foi ensaiado.
+- Acessibilidade e carga não foram testadas.
+- RNF-05 (o que fazer hoje em dois cliques) não tem teste automático.
+
+## Evolução prevista
+
+- Arrastar e soltar no quadro, hoje substituído pelo seletor "Mover" ([pedido 1](docs/04-prototipo/02-validacao-do-prototipo.md)).
+- Painel com previsão de receita, que depende de histórico de uso ([pedido 8](docs/04-prototipo/02-validacao-do-prototipo.md)).
+- Alerta por WhatsApp quando um lead responde ([pedido 9](docs/04-prototipo/02-validacao-do-prototipo.md)).
 
 ## Licença
 
-MIT.
+MIT. O código roda localmente; instruções no arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
