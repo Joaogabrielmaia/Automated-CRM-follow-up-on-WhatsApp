@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [atendente](04-registro-atendente.md) · [cliente](05-registro-cliente.md) · [problemas](07-problemas-priorizados.md)
 
-> Não é uma reunião que aconteceu. Eu escrevi o roteiro e as perguntas, e simulei as respostas usando uma IA no papel do Marcos, dono da Casa Nova Reformas. Fiz isso porque não tinha um dono real para entrevistar neste projeto. Os números que aparecem nas respostas são do cenário, não medições.
+> Reunião simulada; pessoas e empresa fictícias.
 
 ## Roteiro
 

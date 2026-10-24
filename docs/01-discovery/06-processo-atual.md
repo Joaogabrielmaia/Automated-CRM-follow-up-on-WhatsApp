@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [problemas priorizados](07-problemas-priorizados.md) · [registro da atendente](04-registro-atendente.md)
 
-Montei este fluxo a partir dos [registros simulados](04-registro-atendente.md). Os blocos em vermelho são onde o lead esfria.
+Baseado em registros simulados; impactos são hipóteses. Os blocos em vermelho são onde o lead esfria.
 
 ```mermaid
 flowchart TD

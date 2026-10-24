@@ -6,7 +6,7 @@
 
 ## Contexto
 
-Preciso de e-mail e senha com dois papéis, em Next.js App Router, rodando serverless. Quero conseguir explicar cada linha da autenticação numa entrevista.
+Preciso de e-mail e senha com dois papéis, em Next.js App Router, rodando serverless. Quero conseguir explicar cada linha da autenticação.
 
 ## Alternativas
 

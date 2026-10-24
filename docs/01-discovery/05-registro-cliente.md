@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [dono](03-registro-dono.md) · [atendente](04-registro-atendente.md) · [problemas](07-problemas-priorizados.md)
 
-> Não é uma reunião que aconteceu. Simulei esta conversa com uma IA no papel da Renata, cliente-tipo da Casa Nova Reformas. É um retrato plausível, não uma pesquisa com clientes reais, e por isso não uso nenhuma conclusão daqui como estatística.
+> Reunião simulada; pessoas e empresa fictícias.
 
 ## Roteiro
 

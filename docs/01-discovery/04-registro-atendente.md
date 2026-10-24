@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [dono](03-registro-dono.md) · [cliente](05-registro-cliente.md) · [processo atual](06-processo-atual.md)
 
-> Não é uma reunião que aconteceu. Escrevi o roteiro e simulei as respostas com uma IA no papel da Camila, atendente da Casa Nova Reformas. Os números são do cenário.
+> Reunião simulada; pessoas e empresa fictícias.
 
 ## Roteiro
 

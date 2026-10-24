@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [processo atual](06-processo-atual.md) · [requisitos](../02-definicao/02-requisitos.md)
 
-A "evidência" aponta para o registro simulado de onde a informação veio. Como os registros são simulados, o impacto é uma **hipótese** a validar com dados reais num piloto.
+Baseado em registros simulados; impactos são hipóteses. A evidência aponta para o registro de onde veio a informação.
 
 | ID | Problema | Causa raiz | Impacto (hipótese) | Evidência | Prioridade |
 |---|---|---|---|---|---|
