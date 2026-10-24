@@ -1,0 +1,16 @@
+data: 2026-10-24T00:47:50-03:00
+commit: cbbcc47 (código idêntico ao desta branch; só .md e imagens mudam)
+node: v24.14.0
+comando: npm run lint
+---
+
+> pulso@1.0.0 lint
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+✔ No ESLint warnings or errors
+--- saída: código 0

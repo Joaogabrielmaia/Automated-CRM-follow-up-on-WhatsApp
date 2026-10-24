@@ -27,6 +27,8 @@ Dois scripts repetiram a mesma ação contra o servidor de produção (`next bui
 | Com `loading.tsx`, prefetch desligado | 3 em 40 (e 2 em 40 numa repetição) | 5 em 40 |
 | **Sem `loading.tsx`**, prefetch desligado | **0 em 60** (e 0 em 40) | **0 em 60** (e 0 em 40) |
 
+Tabela do autor; resultado bruto não arquivado.
+
 Conclusões: o prefetch não era a causa; o gatilho é o `revalidatePath` somado à fronteira de Suspense que o `loading.tsx` cria em volta das páginas. Não aprofundei o mecanismo interno do Next 15.5.28; o que fica registrado é a medição, não uma explicação do framework.
 
 ## Decisão

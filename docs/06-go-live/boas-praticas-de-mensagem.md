@@ -4,7 +4,7 @@
 **Data:** 23/10/2026 · **Status:** vigente
 **Relacionados:** [RSK-01, RSK-07](../02-definicao/06-riscos.md) · [registro do cliente](../01-discovery/05-registro-cliente.md) · [regras de negócio](../02-definicao/03-regras-de-negocio.md)
 
-> A base destas recomendações é a conversa simulada com a "Renata" (uma IA no papel da cliente-tipo) e o bom senso. Não testei nenhum texto com cliente de verdade. Trate como ponto de partida e meça: taxa de resposta e pedidos de SAIR dizem mais que este guia.
+> Conversa simulada com a cliente-tipo; pessoa e empresa fictícias. Nenhum texto foi testado com cliente de verdade: taxa de resposta e pedidos de SAIR dizem mais que este guia.
 
 ## O que o sistema já garante (não precisa escrever no texto)
 

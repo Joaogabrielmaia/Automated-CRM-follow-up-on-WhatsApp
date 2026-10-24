@@ -6,14 +6,13 @@
 
 ## Contexto
 
-O Pulso precisa, a cada poucos minutos, olhar quais leads estão devidos para uma mensagem, tarefa ou mudança de etapa e executar isso com segurança (sem duplicar, sem violar horário). Quero mostrar n8n porque é a ferramenta que vagas de automação pedem, mas as regras de negócio precisam de teste automatizado.
+O Pulso precisa, a cada poucos minutos, olhar quais leads estão devidos para uma mensagem, tarefa ou mudança de etapa e executar isso com segurança (sem duplicar, sem violar horário). Quero usar o n8n como agendador, mas as regras de negócio precisam de teste automatizado.
 
 ## Alternativas
 
 1. **Tudo no n8n:** cada regra vira um fluxo com nós de banco, condição e envio.
 2. **Tudo em código, com fila:** BullMQ (Redis) ou pg-boss (Postgres), com worker próprio.
 3. **Híbrido:** as regras e o envio ficam no app (código tipado e testado), e o n8n só dispara o ciclo por agenda e cuida de integrações de borda.
-4. **Vercel Cron:** o agendador da própria hospedagem.
 
 ## Escolha
 
@@ -22,8 +21,8 @@ Opção 3. O app expõe `POST /api/automation/tick`, protegido por segredo. O n8
 ## Motivo
 
 - Regra de negócio dentro de nós do n8n não se testa com Vitest e é difícil de revisar num diff.
-- Um worker com Redis ou pg-boss pede um processo que fique de pé o tempo todo, o que não combina com a hospedagem gratuita serverless que escolhi.
-- O Vercel Cron no plano gratuito roda no máximo uma vez por dia, pouco para "boas-vindas em até 5 minutos".
+- Um worker com Redis ou pg-boss pede um processo que fique de pé o tempo todo.
+- O ciclo é disparado por um agendador externo (n8n, a cada 5 minutos); onde ele roda não faz parte deste estudo.
 - O n8n continua útil: agenda, visibilidade das execuções, retentativa da chamada, e uma porta de entrada alternativa para respostas ([fluxos](../../../automations/README.md)).
 
 ## Trade-off

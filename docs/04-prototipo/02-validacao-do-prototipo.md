@@ -4,7 +4,7 @@
 **Data:** 22/10/2026 · **Status:** fechado
 **Relacionados:** [wireframes](01-wireframes.md) · [escopo](../02-definicao/05-escopo-e-backlog.md)
 
-> Esta validação é simulada, como os [registros de discovery](../01-discovery/03-registro-dono.md). Mostrei os wireframes a uma IA no papel de cada persona (dono, atendente e mestre de obras) e anotei os pedidos. Não houve usuário real olhando.
+> Validação simulada; pessoas e empresa fictícias.
 
 | # | Quem pediu | Pedido | Decisão | Motivo e impacto no escopo |
 |---|---|---|---|---|

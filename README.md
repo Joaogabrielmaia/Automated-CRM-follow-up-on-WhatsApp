@@ -1,144 +1,134 @@
 # Pulso
 
-**Mini CRM para pequenas empresas de serviços, com funil de vendas e follow-up automático no WhatsApp.**
+**Mini CRM com funil de vendas e follow-up automático no WhatsApp: regras configuráveis, horário comercial, sem duplicar mensagem, parada na resposta e opt-out.**
 
-O Pulso nasceu de um problema simples: numa empresa pequena, o lead esfria depois do orçamento porque ninguém lembra de voltar a falar com ele na hora certa. Automatizar isso é fácil. O difícil é automatizar **sem incomodar o cliente**. Por isso o projeto é construído em torno de quatro garantias:
+## Em 30 segundos
 
-- só envia mensagem **em horário comercial** (fora dele, a mensagem espera na fila);
-- **nunca manda a mesma mensagem duas vezes**, mesmo com dois ciclos rodando ao mesmo tempo;
-- **para na hora em que o lead responde** e avisa a atendente;
-- **respeita quem pede para sair** (SAIR, PARAR, STOP) e bloqueia novos envios.
+- **Problema:** numa empresa fictícia de reformas, o lead esfria depois do orçamento porque ninguém lembra de voltar a falar com ele.
+- **Solução:** o Pulso agenda o retorno e o executa por regras, com quatro travas para não incomodar o cliente.
+- **Prova:** 200 testes de unidade e integração e 16 de ponta a ponta passaram em 24/10/2026 ([log](docs/05-qualidade/execucao-test-cbbcc47.txt)). Um defeito que só aparecia em produção foi medido: com `loading.tsx`, 3/40 e 5/40 falhas; sem ele, 0/60 e 0/40 (tabela do autor, [ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md)).
+- **Comece por aqui:** [tela do lead](docs/imagens/04-lead.png) · [ADR-003: idempotência](docs/03-arquitetura/adr/ADR-003-idempotencia.md) · [o que foi e o que não foi testado](docs/05-qualidade/README.md)
 
-> **Sobre este caso.** A empresa (Casa Nova Reformas), as pessoas e as entrevistas do discovery são **simulados**, e isso está dito no topo de cada registro. Não há usuário real nem WhatsApp real conectado: o envio padrão é simulado. O projeto não está publicado em nenhum servidor; ele roda na sua máquina e o que está aqui é o código, os testes e a documentação.
+## Ficha técnica
 
-## Veja o produto
-
-Os prints abaixo foram tirados do app rodando com os dados de demonstração.
-
-### O dia da atendente: tarefas e leads sem resposta
-
-![Tela Hoje](docs/imagens/02-hoje.png)
-
-A primeira tela da Camila (atendente) mostra o que fazer hoje: tarefas atrasadas, as do dia e os leads que ainda não responderam. Tarefas como "Responder Bruno" são **criadas pela automação** quando o lead escreve.
-
-### Funil de vendas
-
-![Funil](docs/imagens/03-funil.png)
-
-Um quadro por etapa (Novo, Contatado, Orçamento enviado, Negociação, Ganho, Perdido). As etapas são configuráveis ([ADR-006](docs/03-arquitetura/adr/ADR-006-etapas-configuraveis.md)). Também há busca, cadastro de lead e importação por CSV.
-
-### Lead: linha do tempo e próximo passo da automação
-
-![Lead](docs/imagens/04-lead.png)
-
-Tudo o que aconteceu com o lead fica na linha do tempo (notas, mensagens, respostas, mudanças de etapa). Ao lado, o **próximo passo da automação** mostra exatamente quando cada follow-up vai sair, então ninguém precisa adivinhar o que o sistema vai fazer. Dá para pausar a automação só daquele lead e registrar um contato feito fora do sistema (o prazo do follow-up passa a contar desse momento).
-
-### Regras e modelos de mensagem
-
-![Regras](docs/imagens/06-regras.png)
-
-![Modelos](docs/imagens/07-modelos.png)
-
-Cada regra tem um gatilho (lead novo, sem resposta, orçamento parado), uma espera e uma ação: enviar mensagem, criar tarefa ou mover para Perdido. O texto das mensagens fica em modelos editáveis, com variáveis como `{nome}` e `{servico}`. Se faltar um dado que o modelo usa, a mensagem é **pulada** em vez de sair quebrada (RN-14).
-
-### Log da automação
-
-![Log da automação](docs/imagens/08-automacao.png)
-
-Cada decisão do motor fica registrada: quem respondeu, quem pediu para sair, o que foi enviado, pulado, cancelado ou falhou. É a tela para responder "por que essa mensagem saiu (ou não saiu)?".
-
-### Simulador de resposta
-
-![Simulador](docs/imagens/09-simulador.png)
-
-Como não há WhatsApp real, o simulador faz o papel do lead: escreva uma resposta (ou "SAIR") e veja a fila ser cancelada e a tarefa aparecer. A resposta passa pelo mesmo caminho de uma mensagem recebida pelo webhook.
-
-### Outras telas
-
-| Painel de indicadores | Importação por CSV |
+| Campo | Informação |
 |---|---|
-| ![Painel](docs/imagens/05-painel.png) | ![Importar CSV](docs/imagens/11-importar-csv.png) |
+| Natureza | Caso fictício: empresa (Casa Nova Reformas), pessoas e dados inventados |
+| Discovery | Reuniões simuladas, marcadas nas atas ([Ep. 1](docs/01-discovery/README.md)) |
+| Stack | Next.js 15, React 19, TypeScript, Prisma, PostgreSQL, Zod, Vitest, Playwright, n8n |
+| Mensagens | Provedor simulado; adaptador da WhatsApp Cloud API não validado contra a Meta |
+| Agendador | n8n dispara o ciclo a cada 5 minutos |
+| Testes | 200 de unidade e integração (111 + 89) e 16 E2E; log de 24/10/2026, commit `cbbcc47` |
+| Execução | Local; não hospedado |
 
-| Configurações (horário comercial, limites) | Login |
+## Duas entradas
+
+**Pelo lado do negócio.** [Ep. 1 Discovery](docs/01-discovery/README.md): o problema e as reuniões simuladas. [Ep. 2 Definição](docs/02-definicao/README.md): requisitos, regras e metas. [Ep. 6 Go-live](docs/06-go-live/README.md): como entraria em uso. [Ep. 7 Pós-go-live](docs/07-pos-go-live/README.md): operação e retrospectiva.
+
+**Pelo lado técnico.** [Ep. 3 Arquitetura](docs/03-arquitetura/README.md): modelo de dados, fluxo, modos de falha e ADRs. [Ep. 5 Qualidade](docs/05-qualidade/README.md): testes, logs de execução e limites.
+
+Guia completo da série: [docs/INDEX.md](docs/INDEX.md). Termos técnicos: [glossário](docs/GLOSSARIO.md).
+
+<table>
+<tr>
+<td width="50%"><img src="docs/imagens/04-lead.png" alt="Detalhe de um lead com linha do tempo, próximo passo da automação (follow-up 1 em 24h, follow-up 2 em 72h, Perdido em 120h) e botão Pausar automação"></td>
+<td width="50%"><img src="docs/imagens/03-funil.png" alt="Quadro do funil com as seis colunas: Novo, Contatado, Orçamento enviado, Negociação, Ganho e Perdido"></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/imagens/06-regras.png" alt="Lista de seis regras de automação ativas, com gatilho, espera, ação e texto do modelo"></td>
+<td width="50%"><img src="docs/imagens/02-hoje.png" alt="Tela O que fazer hoje, com duas tarefas e um lead sem resposta"></td>
+</tr>
+</table>
+
+![Gravação do app: o ciclo envia o follow-up 1 à lead Carla Mendes, ela responde pelo simulador e o log registra "Lead respondeu" com a sequência interrompida](docs/imagens/demo-followup.gif)
+
+Fluxo real de 23 segundos: contato registrado, follow-up enviado (ciclo com data simulada, pois ele só vence em 24 h), resposta pelo simulador e parada da sequência. [Detalhes e demais telas](docs/imagens/README.md).
+
+## As 4 garantias
+
+| Garantia | Regra |
 |---|---|
-| ![Configurações](docs/imagens/10-configuracoes.png) | ![Login](docs/imagens/01-login.png) |
+| Só envia em **horário comercial**; fora dele, a mensagem espera na fila | [RN-01 e RN-02](docs/02-definicao/03-regras-de-negocio.md) |
+| **Nunca duas vezes** a mesma mensagem, nem com dois ciclos ao mesmo tempo | [RN-05](docs/02-definicao/03-regras-de-negocio.md) · [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) |
+| **Para quando o lead responde** e cria uma tarefa para a atendente | [RN-04](docs/02-definicao/03-regras-de-negocio.md) |
+| **Respeita o opt-out**: SAIR, PARAR ou STOP bloqueiam novos envios | [RN-03](docs/02-definicao/03-regras-de-negocio.md) |
 
-## Como funciona
+## O problema
 
-```
- n8n (a cada 5 min) ──POST /api/automation/tick──▶  App Next.js ──▶ PostgreSQL
-                                                       │
- WhatsApp (resposta do lead) ──webhook──▶ rota do app ─┤
-                                                       ▼
-                                           MessageProvider
-                                      simulated  |  whatsapp-cloud
-```
+Em uma empresa pequena de serviços, o orçamento sai e o retorno depende de alguém lembrar. O lead esfria.
+Automatizar o retorno é simples; o difícil é fazer isso sem virar insistência, mensagem de madrugada ou resposta duplicada. Detalhes: [Ep. 1](docs/01-discovery/README.md).
 
-- O **app** (Next.js, Prisma e PostgreSQL) guarda leads, funil, tarefas, regras e o histórico.
-- O **n8n** só **dispara** o ciclo a cada 5 minutos. Toda decisão de negócio fica no app, em funções puras testadas. Se o n8n cair, nada se perde: o próximo ciclo recupera o atraso ([por quê](docs/03-arquitetura/adr/ADR-001-n8n-ou-jobs-em-codigo.md)).
-- O envio passa sempre por um **`MessageProvider`**: `simulated` (padrão) ou `whatsapp-cloud` (API oficial da Meta, com código e testes, mas **ainda não validado contra a Meta de verdade**).
-- Duas respostas ao mesmo tempo ou dois ciclos simultâneos não duplicam mensagem: a garantia é uma **restrição única no banco** ([ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md)).
+## O que faz
 
-Fluxo completo da automação: [docs/03-arquitetura/02-fluxo-da-automacao.md](docs/03-arquitetura/02-fluxo-da-automacao.md).
+- Funil de leads com etapas configuráveis, linha do tempo e tarefas por lead.
+- Regras com gatilho, espera e ação: enviar mensagem, criar tarefa ou mover para Perdido.
+- Modelos de mensagem com variáveis; se faltar um dado, a mensagem é pulada (RN-14).
+- Log de cada decisão do motor e simulador de resposta do lead.
+- Painel de indicadores e importação de leads por CSV.
 
-## O que tem em cada pasta
+## O que este projeto mostra
 
-| Pasta | O que tem |
+- Regras de negócio escritas como funções puras que recebem a hora, testáveis sem esperar o relógio.
+- Idempotência em duas camadas no banco, com teste de concorrência.
+- Um defeito que só existia no build de produção, diagnosticado por medição e não por palpite.
+
+## O que o projeto exercita, e onde está a prova
+
+| O que o projeto exercita | Onde está a prova |
 |---|---|
-| [`src/app`](src/app) | Telas e rotas do Next.js. As telas ficam em `(app)/` (hoje, funil, lead, regras, modelos, automação, simulador, painel, configurações); as rotas de API em `api/` (ciclo da automação, health e webhooks do WhatsApp) |
-| [`src/app/actions`](src/app/actions) | Server actions. Cada uma valida a entrada com Zod e confere sessão e papel no servidor |
-| [`src/components`](src/components) | Componentes de interface reutilizáveis |
-| [`src/lib/rules`](src/lib/rules) | **Regras de negócio como funções puras** que recebem `now`: horário comercial, opt-out, backoff, limites, telefone, modelo de mensagem, assinatura do webhook, CSV |
-| [`src/lib/automation`](src/lib/automation) | Orquestração com banco: o motor do ciclo (`engine.ts`) e o tratamento de respostas recebidas (`inbound.ts`) |
-| [`src/lib/providers`](src/lib/providers) | `MessageProvider`: adaptador simulado e adaptador da WhatsApp Cloud API |
-| [`src/lib/services`](src/lib/services) | Acesso a dados por assunto (leads, regras, modelos, tarefas, painel, importação, log) |
-| [`src/lib/auth`](src/lib/auth) | Sessão, senha (bcrypt) e permissões por papel (Admin e Atendente) |
-| [`prisma`](prisma) | Schema, as migrations e os seeds (demonstração e piloto) |
-| [`tests`](tests) | Testes unitários (regras puras) e de integração (motor, webhook, permissões, painel, importação) contra um banco de verdade |
-| [`e2e`](e2e) | Testes de ponta a ponta no navegador (Playwright), contra o build de produção |
-| [`automations`](automations) | O fluxo do n8n versionado (`tick.json`) |
-| [`scripts`](scripts) | Utilitários de linha de comando: rodar um ciclo, simular uma resposta, criar um usuário |
-| [`docs`](docs) | Toda a documentação do projeto, da ideia ao pós go-live (veja abaixo); os prints deste README ficam em `docs/imagens` |
-| [`.github/workflows`](.github/workflows) | CI: tipos, lint, testes e E2E a cada push |
+| Traduzir "tudo automático" em regras verificáveis | [19 regras com valor padrão](docs/02-definicao/03-regras-de-negocio.md) e [rastreabilidade](docs/02-definicao/07-rastreabilidade.md) |
+| Desenhar follow-up que respeita horário, resposta e opt-out | [Tela de regras](docs/imagens/06-regras.png) e as regras RN-01 a RN-04 |
+| Garantir que a mesma mensagem não saia duas vezes | [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) |
+| Diagnosticar um defeito só de produção com medição | [ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md) |
+| Recusar escopo com motivo | [Validação do protótipo](docs/04-prototipo/02-validacao-do-prototipo.md): reunião simulada, 2 recusados, 3 adiados, 5 aceitos |
+| Escrever mensagem de follow-up com critério | [Boas práticas de mensagem](docs/06-go-live/boas-praticas-de-mensagem.md) e [modelos](docs/imagens/07-modelos.png) |
+| Planejar operação e volta atrás | [Go-live](docs/06-go-live/README.md) e [runbook](docs/07-pos-go-live/runbook.md), com o status declarado em cada um |
 
-## Documentação
+## Episódios
 
-A documentação segue a ordem em que o projeto foi pensado. O ponto de partida é [docs/00-sobre-este-caso](docs/00-sobre-este-caso/README.md).
-
-| Etapa | O que responde | Leia |
+| Ep. | Tema | Leia |
 |---|---|---|
-| **1. Discovery** | Que problema vale resolver e para quem? | [Brainstorm e escolha da ideia](docs/01-discovery/01-brainstorm-e-escolha.md) · [Negócio e personas](docs/01-discovery/02-negocio-e-personas.md) · [Processo atual](docs/01-discovery/06-processo-atual.md) · [Problemas priorizados](docs/01-discovery/07-problemas-priorizados.md) |
-| **2. Definição** | O que o produto precisa fazer, e o que fica de fora? | [Visão e metas](docs/02-definicao/01-visao-e-metas.md) · [Requisitos](docs/02-definicao/02-requisitos.md) · [Regras de negócio (RN-01 a RN-19)](docs/02-definicao/03-regras-de-negocio.md) · [Histórias de usuário](docs/02-definicao/04-historias-de-usuario.md) · [Escopo e backlog](docs/02-definicao/05-escopo-e-backlog.md) · [Riscos](docs/02-definicao/06-riscos.md) · [Rastreabilidade](docs/02-definicao/07-rastreabilidade.md) |
-| **3. Arquitetura** | Como foi construído, e por quê? | [Modelo de dados](docs/03-arquitetura/01-modelo-de-dados.md) · [Fluxo da automação](docs/03-arquitetura/02-fluxo-da-automacao.md) · [Componentes](docs/03-arquitetura/03-componentes.md) · [Segurança e privacidade](docs/03-arquitetura/04-seguranca-e-privacidade.md) · [Modos de falha](docs/03-arquitetura/05-modos-de-falha.md) |
-| **4. Protótipo** | Foi validado antes de codar? | [Wireframes](docs/04-prototipo/01-wireframes.md) · [Validação do protótipo](docs/04-prototipo/02-validacao-do-prototipo.md) |
-| **5. Qualidade** | O que está testado, e o que não está? | [Estratégia e resultados](docs/05-qualidade/README.md) |
-| **6. Go-live** | Como entraria em uso de verdade? | [Plano de rollout em fases](docs/06-go-live/rollout.md) · [n8n](docs/06-go-live/n8n.md) · [Boas práticas de mensagem](docs/06-go-live/boas-praticas-de-mensagem.md) · [Treinamento](docs/06-go-live/treinamento.md) · [Rollback](docs/06-go-live/rollback.md) |
-| **7. Pós go-live** | Como operar e o que aprendi? | [Runbook](docs/07-pos-go-live/runbook.md) · [Retrospectiva](docs/07-pos-go-live/retrospectiva.md) |
+| 0 | Sobre este caso | [Real × simulado](docs/00-sobre-este-caso/README.md) |
+| 1 | Discovery | [Problema, personas e reuniões simuladas](docs/01-discovery/README.md) |
+| 2 | Definição | [Requisitos, regras e metas](docs/02-definicao/README.md) |
+| 3 | Arquitetura | [Fluxo, modos de falha e ADRs](docs/03-arquitetura/README.md) |
+| 4 | Protótipo | [Wireframes e validação simulada](docs/04-prototipo/README.md) |
+| 5 | Qualidade | [Testes, logs e limites](docs/05-qualidade/README.md) |
+| 6 | Go-live | [Rollout, n8n, rollback e treinamento](docs/06-go-live/README.md) |
+| 7 | Pós-go-live | [Runbook e retrospectiva](docs/07-pos-go-live/README.md) |
 
-### Decisões de arquitetura (ADRs)
-
-Cada decisão importante tem um registro com as alternativas consideradas e o trade-off.
+## Decisões que contam
 
 | ADR | Decisão |
 |---|---|
-| [001](docs/03-arquitetura/adr/ADR-001-n8n-ou-jobs-em-codigo.md) | n8n só como agendador; a lógica fica no código |
-| [002](docs/03-arquitetura/adr/ADR-002-provedor-de-mensagens.md) | Interface de provedor com adaptador simulado |
-| [003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) | Idempotência por restrição única no banco |
-| [004](docs/03-arquitetura/adr/ADR-004-agendamento-e-fila.md) | Agendamento e fila fora do horário comercial |
-| [005](docs/03-arquitetura/adr/ADR-005-retentativa-e-falhas.md) | Retentativa com backoff e tratamento de falhas |
-| [006](docs/03-arquitetura/adr/ADR-006-etapas-configuraveis.md) | Etapas do funil configuráveis |
-| [007](docs/03-arquitetura/adr/ADR-007-validacao-do-webhook.md) | Validação do webhook (HMAC) |
-| [008](docs/03-arquitetura/adr/ADR-008-autenticacao.md) | Autenticação e papéis |
-| [010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md) | Sem `loading.tsx`: um defeito que só aparecia no build de produção |
+| [003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) | Idempotência por chave única no banco e reserva atômica antes do envio |
+| [005](docs/03-arquitetura/adr/ADR-005-retentativa-e-falhas.md) | Retentativa com backoff de 1, 5 e 15 minutos; erro definitivo não tenta de novo |
+| [010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md) | Sem `loading.tsx`: ações deixavam de atualizar a tela só no build de produção |
 
-## Qualidade
+**A decisão difícil: não enviar duas vezes.** Texto de [ADR-003](docs/03-arquitetura/adr/ADR-003-idempotencia.md) e do [registro do dono](docs/01-discovery/03-registro-dono.md).
 
-- **200 testes** de unidade e integração (111 + 89) e **16 de ponta a ponta**, em bancos separados.
-- Tipos (`tsc`) e lint sem erro; CI configurada em [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
-- O E2E roda contra o **build de produção**, não contra o modo de desenvolvimento. Foi assim que apareceu um defeito que o modo dev escondia ([ADR-010](docs/03-arquitetura/adr/ADR-010-sem-loading-tsx.md)).
-- O que **não** foi validado está dito com todas as letras em [Qualidade](docs/05-qualidade/README.md): a API da Meta de verdade e o agendamento do n8n rodando por horas.
+| | |
+|---|---|
+| Contexto | O ciclo pode rodar duas vezes seguidas (n8n repetindo a chamada, duas instâncias, execução manual). O dono citou "mandar duas vezes a mesma coisa" como a pior hipótese |
+| Alternativas | Consultar "já enviei?" antes de enviar (não resolve execuções simultâneas); lock global do ciclo (serializa tudo e não protege contra repetição em outro momento); chave única por intenção de envio mais reserva atômica |
+| Escolha | Duas camadas, ambas no banco: `INSERT ... ON CONFLICT DO NOTHING` sobre a chave regra + lead + ciclo, e `UPDATE ... WHERE status = 'PENDING'` antes de enviar |
+| Custo aceito | Se o processo cair entre a reserva e a resposta do provedor, o job vira falha por "estado incerto", sem reenvio, e gera tarefa para a atendente. A mensagem pode não sair; não sai duplicada |
+| Quando mudaria | Se o provedor aceitasse chave de idempotência própria, a chave seria repassada e os jobs em estado incerto poderiam ser reenviados com segurança |
+| Contexto de escopo | A API oficial exige número dedicado e o dono não quer trocar o dele. Isso levou ao provedor plugável e à ação "criar tarefa" ([registro do dono](docs/01-discovery/03-registro-dono.md)) |
 
-## Rodar na sua máquina
+## Evidências
+
+Execução de 24/10/2026 no commit `cbbcc47`, com data, versão do Node e comando no cabeçalho de cada log: [teste](docs/05-qualidade/execucao-test-cbbcc47.txt) · [E2E](docs/05-qualidade/execucao-test-e2e-cbbcc47.txt) · [tipos](docs/05-qualidade/execucao-typecheck-cbbcc47.txt) · [lint](docs/05-qualidade/execucao-lint-cbbcc47.txt).
+
+| Grupo | Testes por arquivo |
+|---|---|
+| Unitários (111) | csv 16, opt-out 15, due-rules 14, phone 14, whatsapp-cloud 12, guards 12, template 10, business-hours 10, backoff 4, signature 4 |
+| Integração (89) | engine 21, leads 15, webhook-meta 14, authorization 9, webhook 8, import 7, seed-pilot 7, health 5, dashboard 3 |
+| E2E (16) | funil 5, login-e-papeis 5, regras 2, importação 2, simulador 2 |
+
+A CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) roda tipos, lint, testes e E2E a cada push na `main`. O último run antes desta branch, no commit `cbbcc47`, terminou com sucesso ([run](https://github.com/Joaogabrielmaia/Automated-CRM-follow-up-on-WhatsApp/actions/runs/39980673278)).
+
+## Rodar localmente
 
 Precisa de Node 20.9+ e Docker.
 
@@ -160,10 +150,20 @@ Contas de teste (senha `Demo@2026`): `marcos@casanova.example` (Admin) e `camila
 | `npm run typecheck` / `npm run lint` | Tipos e estilo |
 | `npm run tick` | Roda um ciclo da automação na linha de comando |
 | `npm run simulate:reply -- <telefone> "<texto>"` | Simula uma resposta de lead |
-| `npm run db:seed:pilot` | Etapas, modelos e regras (desligadas) para um piloto real |
-| `npm run user:create -- <email> "<Nome>" <ADMIN\|ATTENDANT>` | Cria uma conta real (senha em `PULSO_NEW_PASSWORD`) |
 
-O n8n é opcional e sobe com `docker compose --profile n8n up -d n8n`; o passo a passo está em [docs/06-go-live/n8n.md](docs/06-go-live/n8n.md).
+O n8n é opcional e sobe com `docker compose --profile n8n up -d n8n`: [passo a passo](docs/06-go-live/n8n.md).
+
+## O que falta para sair do estudo
+
+- Integração com a Meta não validada: [limites](docs/05-qualidade/README.md).
+- Agendamento do n8n por horas não testado: [n8n](docs/06-go-live/n8n.md).
+- Rollback, runbook e treinamento não ensaiados: [rollback](docs/06-go-live/rollback.md) · [runbook](docs/07-pos-go-live/runbook.md) · [treinamento](docs/06-go-live/treinamento.md).
+- Sem hospedagem: [qualidade](docs/05-qualidade/README.md).
+- Acessibilidade e carga não testadas; RNF-05 sem teste automático: [qualidade](docs/05-qualidade/README.md).
+
+## Limites
+
+Não há usuário real, piloto nem medição de resultado: as metas M1 a M6 são hipóteses ([metas](docs/02-definicao/01-visao-e-metas.md)). O envio é simulado e o fuso é fixo em UTC−3 ([ADR-004](docs/03-arquitetura/adr/ADR-004-agendamento-e-fila.md)).
 
 ## Licença
 

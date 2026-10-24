@@ -1,0 +1,12 @@
+data: 2026-10-24T00:45:50-03:00
+commit: cbbcc47 (código idêntico ao desta branch; só .md e imagens mudam)
+node: v24.14.0
+comando: npm run db:up
+---
+
+> pulso@1.0.0 db:up
+> docker compose up -d db
+
+ Container minicrmcomfunilefollow-upautomticonowhatsapp-db-1 Starting 
+ Container minicrmcomfunilefollow-upautomticonowhatsapp-db-1 Started 
+--- saída: código 0
